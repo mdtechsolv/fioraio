@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/davideiacuzio005-source/La-botttega-del-fiore/main/favicon-32x32.png" sizes="32x32">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fioraio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+    :root {
+      --cream: #f7f2eb;
+      --petal: #e8d5c4;
+      --sage: #7a8c6e;
+      --moss: #4a5e3a;
+      --blush: #c9877a;
+      --ink: #2c2520;
+      --gold: #b89b6a;
+    }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+ 
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(247, 242, 235, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(184, 155, 106, 0.25);
+      transition: box-shadow 0.3s ease;
+    }
+    nav.scrolled { box-shadow: 0 4px 30px rgba(44,37,32,0.08); }
+ 
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+      height: 72px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+    }
+ 
+    /* Left links */
+    .nav-left, .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+    }
+    .nav-right { justify-content: flex-end; }
+ 
+    .nav-link {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      position: relative;
+      padding-bottom: 2px;
+      transition: color 0.3s ease;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1px;
+      background: var(--blush);
+      transition: width 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    .nav-link:hover { color: var(--blush); }
+    .nav-link:hover::after { width: 100%; }
+ 
+    /* Logo */
+    .logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      gap: 0;
+      cursor: pointer;
+    }
+    .logo-flower {
+      font-size: 1.5rem;
+      line-height: 1;
+      animation: sway 6s ease-in-out infinite;
+    }
+    @keyframes sway {
+      0%, 100% { transform: rotate(-4deg); }
+      50% { transform: rotate(4deg); }
+    }
+    .logo-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    .logo-sub {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.58rem;
+      font-weight: 300;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 1px;
+    }
+ 
+    /* CTA button */
+    .nav-cta {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cream);
+      background: var(--moss);
+      text-decoration: none;
+      padding: 0.55rem 1.3rem;
+      border: 1px solid var(--moss);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    .nav-cta:hover {
+      background: transparent;
+      color: var(--moss);
+    }
+ 
+    /* Hamburger (mobile) */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--ink);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+ 
+    /* Mobile menu */
+    .mobile-menu {
+      position: fixed;
+      top: 72px; left: 0; right: 0;
+      background: var(--cream);
+      border-bottom: 1px solid rgba(184,155,106,0.3);
+      padding: 0 2.5rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), padding 0.3s ease;
+      z-index: 99;
+    }
+    .mobile-menu.open {
+      max-height: 500px;
+      padding: 1.5rem 2.5rem 2rem;
+    }
+    .mobile-link {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--ink);
+      text-decoration: none;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(184,155,106,0.2);
+      transition: color 0.2s, padding-left 0.3s;
+    }
+    .mobile-link:last-child { border-bottom: none; }
+    .mobile-link:hover { color: var(--blush); padding-left: 0.5rem; }
+ 
+    /* ─── HERO / DEMO SECTION ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+ 
+    /* Botanical background */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 55% at 15% 80%, rgba(122,140,110,0.14) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 45% at 85% 20%, rgba(201,135,122,0.13) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 60% at 50% 50%, rgba(232,213,196,0.4) 0%, transparent 70%);
+      pointer-events: none;
+    }
+ 
+    /* Decorative petals */
+    .petal-deco {
+      position: absolute;
+      font-size: 4rem;
+      opacity: 0.07;
+      pointer-events: none;
+      animation: floatPetal 12s ease-in-out infinite;
+    }
+    .petal-deco:nth-child(1) { top: 10%; left: 8%; animation-delay: 0s; font-size: 5rem; }
+    .petal-deco:nth-child(2) { top: 70%; left: 5%; animation-delay: 3s; font-size: 3rem; }
+    .petal-deco:nth-child(3) { top: 20%; right: 10%; animation-delay: 5s; font-size: 6rem; }
+    .petal-deco:nth-child(4) { bottom: 15%; right: 8%; animation-delay: 1.5s; font-size: 4rem; }
+    .petal-deco:nth-child(5) { top: 50%; left: 3%; animation-delay: 7s; font-size: 2.5rem; }
+ 
+    @keyframes floatPetal {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      33% { transform: translateY(-18px) rotate(8deg); }
+      66% { transform: translateY(10px) rotate(-5deg); }
+    }
+ 
+    .hero-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 300;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 1s 0.3s forwards;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.2rem, 8vw, 7rem);
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--ink);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 1s 0.55s forwards;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--blush);
+    }
+    .hero-desc {
+      font-size: 0.88rem;
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      color: rgba(44,37,32,0.62);
+      max-width: 420px;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 1s 0.8s forwards;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeUp 1s 1.05s forwards;
+    }
+    .btn-primary {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 400;
+      padding: 1rem 2.5rem;
+      background: var(--moss);
+      color: var(--cream);
+      text-decoration: none;
+      border: 1px solid var(--moss);
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--moss);
+    }
+    .btn-secondary {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 400;
+      padding: 1rem 2.5rem;
+      background: transparent;
+      color: var(--ink);
+      text-decoration: none;
+      border: 1px solid rgba(44,37,32,0.3);
+      transition: all 0.3s ease;
+    }
+    .btn-secondary:hover {
+      border-color: var(--blush);
+      color: var(--blush);
+    }
+ 
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      margin: 3rem auto 0;
+      opacity: 0;
+      animation: fadeUp 1s 1.3s forwards;
+    }
+ 
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .nav-left, .nav-right { display: none; }
+      .hamburger { display: flex; }
+      .nav-inner {
+        grid-template-columns: auto 1fr auto;
+        padding: 0 1.5rem;
+      }
+      .logo { grid-column: 2; justify-self: center; }
+    }
+
+    /* ─── INFO PREMIUM ─── */
+.info-section {
+  padding: 7rem 2rem 6rem;
+  text-align: center;
+  position: relative;
+  opacity: 0;
+  transform: translateY(40px);
+  animation: fadeUp 1.2s 0.2s forwards;
+}
+
+/* glow botanico */
+.info-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(122,140,110,0.12), transparent 60%),
+    radial-gradient(circle at 80% 70%, rgba(201,135,122,0.1), transparent 60%);
+  pointer-events: none;
+}
+
+.info-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.info-tag {
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.info-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.8rem;
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+
+/* stato aperto */
+.open-status {
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  color: var(--sage);
+}
+
+.open-status.open { color: var(--sage); }
+.open-status.closed { color: var(--blush); }
+
+/* card */
+.hours-card {
+  border: 1px solid rgba(184,155,106,0.25);
+  padding: 2.2rem 2.8rem;
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(10px);
+  margin-bottom: 2.8rem;
+  transition: transform 0.4s ease;
+}
+
+.hours-card:hover {
+  transform: translateY(-4px);
+}
+
+/* righe */
+.hours-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.92rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(184,155,106,0.15);
+  transition: all 0.3s ease;
+}
+
+.hours-row:last-child { border-bottom: none; }
+
+/* giorno corrente */
+.hours-row.today {
+  color: var(--moss);
+  font-weight: 500;
+  transform: scale(1.02);
+}
+
+/* giorno chiuso */
+.hours-row.closed span:last-child {
+  color: var(--blush);
+}
+
+/* CTA migliorate */
+.info-actions {
+  display: flex;
+  gap: 1.2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.info-actions a {
+  position: relative;
+  overflow: hidden;
+}
+
+.info-actions a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.info-actions a:hover::after {
+  opacity: 1;
+}
+    
+  </style>
+</head>
+<body>
+ 
+  <!-- ═══ NAVIGATION ═══ -->
+  <nav id="navbar">
+    <div class="nav-inner">
+ 
+      <!-- Left links -->
+      <div class="nav-left">
+        <a href="composizione.html" class="nav-link">Composizioni</a>
+        <a href="piante.html" class="nav-link">Piante</a>
+      </div>
+ 
+      <!-- Logo center -->
+      <a href="#" class="logo">
+        <span class="logo-flower">✿</span>
+        <span class="logo-name">Fioraio</span>
+        <span class="logo-sub">Florist · Artigiano</span>
+      </a>
+ 
+      <!-- Right links -->
+      <div class="nav-right">
+        <a href="tel:0522576309" class="nav-link">Contattaci</a>
+        <a
+          href="https://maps.app.goo.gl/P2EiUiBZ4B3QrrhD7?g_st=ic"
+          target="_blank"
+          rel="noopener"
+          class="nav-cta"
+        >Trovaci</a>
+      </div>
+ 
+      <!-- Hamburger (mobile) -->
+      <button class="hamburger" id="hamburger" aria-label="Apri menu">
+        <span></span><span></span><span></span>
+      </button>
+ 
+    </div>
+  </nav>
+ 
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="composizione.html" class="mobile-link">Composizioni</a>
+    <a href="piante.html"       class="mobile-link">Piante</a>
+    <a href="tel:3333333333"     class="mobile-link">Contattaci</a>
+    <a href="https://maps.app.goo.gl"
+       target="_blank" rel="noopener" class="mobile-link">Trovaci su Maps</a>
+  </div>
+ 
+  <!-- ═══ HERO DEMO ═══ -->
+  <section class="hero">
+    <span class="petal-deco">❀</span>
+    <span class="petal-deco">✾</span>
+    <span class="petal-deco">✿</span>
+    <span class="petal-deco">❁</span>
+    <span class="petal-deco">❃</span>
+ 
+    <p class="hero-tag">Dal cuore della natura, per te</p>
+    <h1 class="hero-title">Fiori che <em>parlano</em><br>per te</h1>
+    <p class="hero-desc">
+      Composizioni artigianali, piante rare e bouquet su misura.<br>
+      Ogni fiore ha una storia. Lascia che la raccontiamo insieme.
+    </p>
+    <div class="hero-actions">
+      <a href="composizione.html" class="btn-primary">Scopri le composizioni</a>
+      <a href=https://www.google.com/maps"
+         target="_blank" rel="noopener" class="btn-secondary">Vieni a trovarci</a>
+    </div>
+    <div class="divider"></div>
+  </section>
+
+  <!-- ═══ ORARI PREMIUM ═══ -->
+<section class="info-section">
+  <div class="info-container">
+
+    <p class="info-tag">Orari del negozio</p>
+    <h2 class="info-title">Quando trovarci</h2>
+
+    <div id="openStatus" class="open-status"></div>
+
+    <div class="hours-card" id="hoursCard">
+      <!-- Generato da JS -->
+    </div>
+
+    <div class="info-actions">
+      <a href="tel:0522576309" class="btn-primary">Contattaci</a>
+      <a href="https://maps.app.goo.gl/P2EiUiBZ4B3QrrhD7?g_st=ic"
+         target="_blank" class="btn-secondary">Vieni a trovarci</a>
+    </div>
+
+  </div>
+</section>
+  
+  <script>
+    // Scroll shadow on navbar
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+ 
+    // Hamburger toggle
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+ 
+    // Close mobile menu on link click
+    mobileMenu.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    const schedule = [
+  { day: "Domenica", open: ["09:30-12:30"] },
+  { day: "Lunedì", open: [] },
+  { day: "Martedì", open: ["09:00-12:30", "15:30-19:00"] },
+  { day: "Mercoledì", open: ["09:00-12:30", "15:30-19:00"] },
+  { day: "Giovedì", open: ["09:00-12:30", "15:30-19:00"] },
+  { day: "Venerdì", open: ["09:00-12:30", "15:30-19:00"] },
+  { day: "Sabato", open: ["09:00-19:00"] }
+];
+
+const now = new Date();
+const todayIndex = now.getDay();
+const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+const hoursCard = document.getElementById("hoursCard");
+const statusBox = document.getElementById("openStatus");
+
+function isOpenToday(dayData) {
+  return dayData.open.some(range => {
+    const [start, end] = range.split("-");
+    const [sh, sm] = start.split(":").map(Number);
+    const [eh, em] = end.split(":").map(Number);
+
+    const startMin = sh * 60 + sm;
+    const endMin = eh * 60 + em;
+
+    return currentMinutes >= startMin && currentMinutes <= endMin;
+  });
+}
+
+// Stato aperto/chiuso
+const todayData = schedule[todayIndex];
+const openNow = isOpenToday(todayData);
+
+statusBox.textContent = openNow ? "Aperto ora" : "Chiuso ora";
+statusBox.classList.add(openNow ? "open" : "closed");
+
+// Genera righe
+schedule.forEach((d, i) => {
+  const row = document.createElement("div");
+  row.className = "hours-row";
+
+  if (i === todayIndex) row.classList.add("today");
+  if (d.open.length === 0) row.classList.add("closed");
+
+  const times = d.open.length
+    ? d.open.join(" · ")
+    : "Chiuso";
+
+  row.innerHTML = `<span>${d.day}</span><span>${times}</span>`;
+  hoursCard.appendChild(row);
+});
+  </script>
+
+</body>
+</html>
