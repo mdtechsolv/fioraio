@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/davideiacuzio005-source/La-botttega-del-fiore/main/favicon-32x32.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Piante — Fioraio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+ 
+  <style>
+    :root {
+      --cream: #f7f2eb;
+      --petal: #e8d5c4;
+      --sage: #7a8c6e;
+      --moss: #4a5e3a;
+      --blush: #c9877a;
+      --ink: #2c2520;
+      --gold: #b89b6a;
+      --card-bg: #fff;
+      --nav-h: 72px;
+    }
+ 
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+ 
+    /* ── Background texture ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 10% 20%, rgba(184,155,106,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 80%, rgba(122,140,110,0.06) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+ 
+    /* ══════════════════════════════
+       NAVBAR
+    ══════════════════════════════ */
+    .navbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 200;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      background: rgba(247,242,235,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(184,155,106,0.18);
+    }
+ 
+    .navbar__logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 400;
+      letter-spacing: .1em;
+      color: var(--ink);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+ 
+    .navbar__logo .logo-ornament {
+      color: var(--blush);
+      font-size: 1.1rem;
+    }
+ 
+    .navbar__links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+ 
+    .navbar__links a {
+      font-size: .68rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      position: relative;
+      padding-bottom: 3px;
+      transition: color .3s;
+    }
+ 
+    .navbar__links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background: var(--blush);
+      transition: width .35s ease;
+    }
+ 
+    .navbar__links a:hover,
+    .navbar__links a.active { color: var(--blush); }
+ 
+    .navbar__links a:hover::after,
+    .navbar__links a.active::after { width: 100%; }
+ 
+    /* Cart pill */
+    .cart-pill {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      cursor: pointer;
+      padding: .45rem 1rem;
+      border: 1px solid rgba(74,94,58,.25);
+      border-radius: 50px;
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      transition: all .3s;
+      position: relative;
+      background: transparent;
+    }
+ 
+    .cart-pill:hover {
+      border-color: var(--blush);
+      background: rgba(201,135,122,.06);
+    }
+ 
+    .cart-pill .cart-count {
+      background: var(--moss);
+      color: white;
+      font-size: .6rem;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform .25s;
+    }
+ 
+    .cart-pill.bump .cart-count { transform: scale(1.4); }
+ 
+    /* Cart dropdown */
+    .cart-dropdown {
+      position: fixed;
+      top: calc(var(--nav-h) + 8px);
+      right: 1.5rem;
+      width: 310px;
+      background: white;
+      border: 1px solid rgba(184,155,106,.2);
+      box-shadow: 0 20px 60px rgba(44,37,32,.12);
+      z-index: 300;
+      transform: translateY(-10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s, transform .3s;
+    }
+ 
+    .cart-dropdown.open {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+ 
+    .cart-dropdown__header {
+      padding: 1.2rem 1.4rem;
+      border-bottom: 1px solid rgba(184,155,106,.15);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+ 
+    .cart-dropdown__close {
+      cursor: pointer;
+      font-size: .9rem;
+      color: rgba(44,37,32,.4);
+      transition: color .2s;
+    }
+ 
+    .cart-dropdown__close:hover { color: var(--blush); }
+ 
+    .cart-dropdown__body {
+      max-height: 280px;
+      overflow-y: auto;
+      padding: .8rem 1.4rem;
+    }
+ 
+    .cart-dropdown__empty {
+      font-size: .8rem;
+      color: rgba(44,37,32,.4);
+      font-style: italic;
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+ 
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: .6rem 0;
+      border-bottom: 1px solid rgba(184,155,106,.1);
+      font-size: .8rem;
+      gap: .5rem;
+    }
+ 
+    .cart-item:last-child { border-bottom: none; }
+ 
+    .cart-item__name { font-weight: 500; flex: 1; }
+ 
+    .cart-item__price {
+      color: var(--moss);
+      white-space: nowrap;
+    }
+ 
+    .cart-item__remove {
+      cursor: pointer;
+      color: rgba(44,37,32,.3);
+      font-size: .75rem;
+      transition: color .2s;
+      flex-shrink: 0;
+    }
+ 
+    .cart-item__remove:hover { color: var(--blush); }
+ 
+    .cart-dropdown__footer {
+      padding: 1rem 1.4rem;
+      border-top: 1px solid rgba(184,155,106,.15);
+    }
+ 
+    .cart-clear {
+      font-size: .65rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(44,37,32,.4);
+      cursor: pointer;
+      transition: color .2s;
+    }
+ 
+    .cart-clear:hover { color: var(--blush); }
+ 
+    /* ══════════════════════════════
+       HERO
+    ══════════════════════════════ */
+    .page-hero {
+      position: relative;
+      padding: calc(var(--nav-h) + 5rem) 2rem 5rem;
+      text-align: center;
+      overflow: hidden;
+    }
+ 
+    .hero-ornament {
+      position: absolute;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      color: rgba(184,155,106,.12);
+      font-size: clamp(6rem, 18vw, 14rem);
+      pointer-events: none;
+      line-height: 1;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      z-index: 0;
+    }
+ 
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+ 
+    .hero-eyebrow {
+      font-size: .65rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .8rem;
+    }
+ 
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: '';
+      width: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+ 
+    .hero-eyebrow::after { transform: scaleX(-1); }
+ 
+    .page-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 7vw, 6.5rem);
+      font-weight: 300;
+      line-height: 1;
+      color: var(--ink);
+      letter-spacing: -.01em;
+    }
+ 
+    .page-hero h1 em {
+      font-style: italic;
+      color: var(--blush);
+    }
+ 
+    .hero-sub {
+      margin-top: 1.5rem;
+      font-size: .78rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(44,37,32,.5);
+    }
+ 
+    /* ══════════════════════════════
+       SEASON INDICATOR
+    ══════════════════════════════ */
+    .season-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      padding: 0 2rem 3.5rem;
+      position: relative;
+      z-index: 1;
+    }
+ 
+    .season-btn {
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: .9rem 1.8rem;
+      font-size: .68rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(44,37,32,.45);
+      transition: all .3s;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+ 
+    .season-btn::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      width: 0; height: 2px;
+      background: var(--blush);
+      transition: all .35s;
+      transform: translateX(-50%);
+    }
+ 
+    .season-btn:hover { color: var(--ink); }
+ 
+    .season-btn.active {
+      color: var(--ink);
+      font-weight: 500;
+    }
+ 
+    .season-btn.active::before { width: calc(100% - 3.6rem); }
+ 
+    .season-btn .s-icon { font-size: .85rem; }
+ 
+    .season-divider {
+      width: 1px;
+      height: 16px;
+      background: rgba(184,155,106,.3);
+    }
+ 
+    /* ══════════════════════════════
+       RESULTS INFO
+    ══════════════════════════════ */
+    .results-bar {
+      max-width: 1200px;
+      margin: 0 auto 1.5rem;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+ 
+    .results-count {
+      font-size: .68rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(44,37,32,.4);
+    }
+ 
+    .results-line {
+      flex: 1;
+      margin-left: 1.5rem;
+      height: 1px;
+      background: linear-gradient(to right, rgba(184,155,106,.25), transparent);
+    }
+ 
+    /* ══════════════════════════════
+       GRID
+    ══════════════════════════════ */
+    .grid-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem 7rem;
+      position: relative;
+      z-index: 1;
+    }
+ 
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.8rem;
+    }
+ 
+    /* ══════════════════════════════
+       CARD
+    ══════════════════════════════ */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid rgba(184,155,106,.18);
+      transition: transform .45s cubic-bezier(.22,1,.36,1), box-shadow .45s ease;
+      position: relative;
+      overflow: hidden;
+      animation: cardIn .5s ease both;
+    }
+ 
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 50px rgba(44,37,32,.1);
+    }
+ 
+    /* Image */
+    .card__img {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+    }
+ 
+    .card__img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .7s cubic-bezier(.22,1,.36,1);
+      display: block;
+    }
+ 
+    .card:hover .card__img img { transform: scale(1.07); }
+ 
+    /* Overlay gradient on image */
+    .card__img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(44,37,32,.25) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity .4s;
+    }
+ 
+    .card:hover .card__img::after { opacity: 1; }
+ 
+    /* Badge */
+    .card__badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      background: rgba(247,242,235,.92);
+      backdrop-filter: blur(6px);
+      color: var(--moss);
+      font-size: .6rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: .3rem .75rem;
+      border: 1px solid rgba(74,94,58,.2);
+      z-index: 2;
+    }
+ 
+    /* Body */
+    .card__body {
+      padding: 1.4rem 1.4rem 1.5rem;
+      position: relative;
+    }
+ 
+    .card__name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.45rem;
+      font-weight: 400;
+      line-height: 1.2;
+      margin-bottom: .4rem;
+    }
+ 
+    .card__desc {
+      font-size: .78rem;
+      color: rgba(44,37,32,.55);
+      line-height: 1.6;
+      margin-bottom: 1.1rem;
+    }
+ 
+    .card__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .8rem;
+    }
+ 
+    .card__price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--moss);
+      font-style: italic;
+    }
+ 
+    /* Add to cart button */
+    .add-to-cart {
+      border: 1px solid var(--moss);
+      background: transparent;
+      color: var(--moss);
+      font-family: 'Jost', sans-serif;
+      font-size: .62rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: .55rem 1rem;
+      cursor: pointer;
+      transition: all .3s;
+      white-space: nowrap;
+    }
+ 
+    .add-to-cart:hover {
+      background: var(--moss);
+      color: white;
+    }
+ 
+    .add-to-cart.added {
+      background: var(--blush);
+      border-color: var(--blush);
+      color: white;
+    }
+ 
+    /* ══════════════════════════════
+       EMPTY STATE
+    ══════════════════════════════ */
+    .empty-msg {
+      grid-column: 1/-1;
+      display: none;
+      text-align: center;
+      padding: 5rem 2rem;
+    }
+ 
+    .empty-msg.visible { display: block; }
+ 
+    .empty-msg p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-style: italic;
+      color: rgba(44,37,32,.35);
+    }
+ 
+    .empty-msg small {
+      display: block;
+      margin-top: .5rem;
+      font-size: .72rem;
+      letter-spacing: .15em;
+      color: rgba(44,37,32,.25);
+    }
+ 
+    /* ══════════════════════════════
+       FOOTER STRIP
+    ══════════════════════════════ */
+    .footer-strip {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid rgba(184,155,106,.18);
+      font-size: .65rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(44,37,32,.3);
+    }
+ 
+    /* ══════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════ */
+    .navbar__burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: .3rem;
+    }
+ 
+    .navbar__burger span {
+      display: block;
+      width: 22px; height: 1px;
+      background: var(--ink);
+      transition: .3s;
+    }
+ 
+    @media (max-width: 768px) {
+      .navbar { padding: 0 1.5rem; }
+ 
+      .navbar__burger { display: flex; }
+ 
+      .navbar__links {
+        position: fixed;
+        inset: var(--nav-h) 0 0 0;
+        background: rgba(247,242,235,.97);
+        flex-direction: column;
+        justify-content: center;
+        gap: 2rem;
+        transform: translateX(100%);
+        transition: transform .4s cubic-bezier(.22,1,.36,1);
+      }
+ 
+      .navbar__links.open { transform: translateX(0); }
+ 
+      .season-bar { flex-wrap: wrap; gap: .3rem; }
+      .season-divider { display: none; }
+      .season-btn { padding: .7rem 1.2rem; }
+ 
+      .navbar__logo { font-size: 1.1rem; }
+    }
+ 
+    @media (max-width: 480px) {
+      .products-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+ 
+<!-- ════════════════════════════════
+     NAVBAR
+════════════════════════════════ -->
+<nav class="navbar">
+  <a class="navbar__logo" href="index.html">
+    <span class="logo-ornament">✿</span> Fioraio
+  </a>
+ 
+  <button class="navbar__burger" id="burger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+ 
+  <ul class="navbar__links" id="navLinks">
+    <li><a href="composizione.html">Composizioni</a></li>
+    <li><a href="piante.html" class="active">Piante</a></li>
+    <li><a href="tel:0522576309">Contattaci</a></li>
+    <li><a href="https://maps.app.goo.gl" target="_blank">Trovaci su Maps</a></li>
+  </ul>
+ 
+  <div class="cart-pill" id="cartTrigger" role="button" aria-label="Carrello">
+    <span>🛒</span>
+    <span class="cart-count" id="cartCount">0</span>
+  </div>
+</nav>
+ 
+<!-- Cart dropdown -->
+<div class="cart-dropdown" id="cartDropdown">
+  <div class="cart-dropdown__header">
+    <span>Il tuo carrello</span>
+    <span class="cart-dropdown__close" id="cartClose">✕</span>
+  </div>
+  <div class="cart-dropdown__body" id="cartBody">
+    <p class="cart-dropdown__empty">Il carrello è vuoto.</p>
+  </div>
+  <div class="cart-dropdown__footer">
+    <span class="cart-clear" id="cartClear">Svuota carrello</span>
+  </div>
+</div>
+ 
+<!-- ════════════════════════════════
+     HERO
+════════════════════════════════ -->
+<header class="page-hero">
+  <div class="hero-ornament">Fiori</div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">La Bottega del Fiore</p>
+    <h1>Piante &amp; <em>Fiori</em></h1>
+    <p class="hero-sub">Scegli in base alla stagione</p>
+  </div>
+</header>
+ 
+<!-- ════════════════════════════════
+     FILTRI STAGIONALI
+════════════════════════════════ -->
+<section class="season-bar" role="group" aria-label="Filtra per stagione">
+  <button class="season-btn active" data-season="tutti">
+    <span class="s-icon">🌍</span> Tutte le stagioni
+  </button>
+  <div class="season-divider"></div>
+  <button class="season-btn" data-season="primavera">
+    <span class="s-icon">🌸</span> Primavera
+  </button>
+  <div class="season-divider"></div>
+  <button class="season-btn" data-season="estate">
+    <span class="s-icon">☀️</span> Estate
+  </button>
+  <div class="season-divider"></div>
+  <button class="season-btn" data-season="autunno">
+    <span class="s-icon">🍂</span> Autunno
+  </button>
+  <div class="season-divider"></div>
+  <button class="season-btn" data-season="inverno">
+    <span class="s-icon">❄️</span> Inverno
+  </button>
+</section>
+ 
+<!-- ════════════════════════════════
+     RESULTS BAR
+════════════════════════════════ -->
+<div class="results-bar">
+  <span class="results-count" id="resultsCount"></span>
+  <div class="results-line"></div>
+</div>
+ 
+<!-- ════════════════════════════════
+     GRIGLIA PRODOTTI
+════════════════════════════════ -->
+<main class="grid-wrapper">
+  <div class="products-grid" id="grid">
+ 
+    <!-- ── TUTTO L'ANNO ── -->
+    <div class="card" data-season="tutti">
+      <div class="card__img">
+        <img src="https://i.pinimg.com/736x/ab/36/15/ab361543065a38d15bb887ab3094628a.jpg" alt="Rosa Classica" loading="lazy">
+        <span class="card__badge">Tutto l'anno</span>
+      </div>
+      <div class="card__body">
+        <h2 class="card__name">Rosa Classica</h2>
+        <p class="card__desc">Simbolo senza tempo dell'amore e dell'eleganza, disponibile in molti colori.</p>
+        <div class="card__footer">
+          <p class="card__price">Da €2,50 / stelo</p>
+          <button class="add-to-cart">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="card" data-season="tutti">
+      <div class="card__img">
+        <img src="https://i.pinimg.com/1200x/21/2d/33/212d338f8eabc92e4aa901f73f94cc93.jpg" alt="Orchidea Phalaenopsis" loading="lazy">
+        <span class="card__badge">Tutto l'anno</span>
+      </div>
+      <div class="card__body">
+        <h2 class="card__name">Orchidea Phalaenopsis</h2>
+        <p class="card__desc">Pianta da interno raffinata, lunga fioritura e facile cura.</p>
+        <div class="card__footer">
+          <p class="card__price">Da €18,00</p>
+          <button class="add-to-cart">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- ── PRIMAVERA ── -->
+    <div class="card" data-season="primavera">
+      <div class="card__img">
+        <img src="https://i.pinimg.com/1200x/df/0a/80/df0a805789d7dfa7b2e01e4d4ea2a4b6.jpg" alt="Tulipano" loading="lazy">
+        <span class="card__badge">Primavera</span>
+      </div>
+      <div class="card__body">
+        <h2 class="card__name">Tulipano</h2>
+        <p class="card__desc">Colori vivaci e forme eleganti, perfetti per decorare la casa in primavera.</p>
+        <div class="card__footer">
+          <p class="card__price">Da €1,80 / stelo</p>
+          <button class="add-to-cart">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="card" data-season="primavera">
+      <div class="card__img">
+        <img src="https://i.pinimg.com/736x/d3/fa/13/d3fa134c83fd1416594c301ec21232ed.jpg" alt="Mimosa" loading="lazy">
+        <span class="card__badge">Primavera</span>
+      </div>
+      <div class="card__body">
+        <h2 class="card__name">Mimosa</h2>
+        <p class="card__desc">Soffici e profumate, le mimose portano il calore della primavera in casa tua.</p>
+        <div class="card__footer">
+          <p class="card__price">Da €6,00 / mazzo</p>
+          <button class="add-to-cart">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- ── ESTATE ── -->
+    <div class="card" data-season="estate">
+      <div class="card__img">
+        <img src="https://i.pinimg.com/1200x/7e/51/78/7e517879702025ab52fbd431f15db869.jpg" alt="Girasole" loading="lazy">
+        <span class="card__badge">Estate</span>
+      </div>
+      <div class="card__body">
+        <h2 class="card__name">Girasole</h2>
+        <p class="card__desc">Luminosi e allegri, i girasoli portano l'energia dell'estate in ogni ambiente.</p>
+        <div class="card__footer">
+          <p class="card__price">Da €2,00 / stelo</p>
+          <button class="add-to-cart">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="card" data-season="estate">
+      <div class="card__img">
+        <img src="https://i.pinimg.com/1200x/f8/12/5e/f8125e0112c83d67cf31edf8b3da432c.jpg" alt="Lavanda" loading="lazy">
+        <span class="card__badge">Estate</span>
+      </div>
+      <div class="card__body">
+        <h2 class="card__name">Lavanda</h2>
+        <p class="card__desc">Profumo inconfondibile e colore rilassante, ideale per bouquet e decorazioni.</p>
+        <div class="card__footer">
+          <p class="card__price">Da €4,50 / fascio</p>
+          <button class="add-to-cart">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- ── AUTUNNO ── -->
+    <div class="card" data-season="autunno">
+      <div class="card__img">
+        <img src="https://i.pinimg.com/1200x/e5/21/50/e52150bf90a9e2af7c21cae723145866.jpg" alt="Crisantemo" loading="lazy">
+        <span class="card__badge">Autunno</span>
+      </div>
+      <div class="card__body">
+        <h2 class="card__name">Crisantemo</h2>
+        <p class="card__desc">Resistente e colorato, il crisantemo illumina i giorni più freschi dell'autunno.</p>
+        <div class="card__footer">
+          <p class="card__price">Da €3,50 / pianta</p>
+          <button class="add-to-cart">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="card" data-season="autunno">
+      <div class="card__img">
+        <img src="https://i.pinimg.com/1200x/28/9e/06/289e0683f4cffe6a5a4d0cdb477ba17d.jpg" alt="Dalia Autunnale" loading="lazy">
+        <span class="card__badge">Autunno</span>
+      </div>
+      <div class="card__body">
+        <h2 class="card__name">Dalia Autunnale</h2>
+        <p class="card__desc">Grandi fiori dalle tonalità calde, protagonisti delle composizioni d'autunno.</p>
+        <div class="card__footer">
+          <p class="card__price">Da €3,00 / stelo</p>
+          <button class="add-to-cart">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- ── INVERNO ── -->
+    <div class="card" data-season="inverno">
+      <div class="card__img">
+        <img src="https://i.pinimg.com/1200x/52/e1/b0/52e1b05a8b62c8fa51baef7a5af013ae.jpg" alt="Stella di Natale" loading="lazy">
+        <span class="card__badge">Inverno</span>
+      </div>
+      <div class="card__body">
+        <h2 class="card__name">Stella di Natale</h2>
+        <p class="card__desc">Icona delle feste, porta calore e colore nei mesi più freddi dell'anno.</p>
+        <div class="card__footer">
+          <p class="card__price">Da €8,00 / pianta</p>
+          <button class="add-to-cart">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="card" data-season="inverno">
+      <div class="card__img">
+        <img src="https://i.pinimg.com/1200x/d3/4a/e7/d34ae77f9f8aadf138da4791a8a0aed6.jpg" alt="Elleboro" loading="lazy">
+        <span class="card__badge">Inverno</span>
+      </div>
+      <div class="card__body">
+        <h2 class="card__name">Elleboro</h2>
+        <p class="card__desc">Elegante e raffinato, fiorisce anche sotto la neve. Perfetto per decorazioni invernali.</p>
+        <div class="card__footer">
+          <p class="card__price">Da €5,00 / stelo</p>
+          <button class="add-to-cart">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Empty state -->
+    <div class="empty-msg" id="emptyMsg">
+      <p>Nessun fiore disponibile per questa stagione.</p>
+      <small>Torna presto 🌱</small>
+    </div>
+ 
+  </div>
+</main>
+ 
+<!-- ════════════════════════════════
+     FOOTER
+════════════════════════════════ -->
+<footer class="footer-strip">
+  ✿ La Bottega del Fiore &nbsp;·&nbsp; Nonantola &nbsp;·&nbsp; Tel. 0522 576309
+</footer>
+ 
+<!-- ════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════ -->
+<script>
+  /* ── Cart state ── */
+  let cart = JSON.parse(localStorage.getItem('lbdf_cart') || '[]');
+ 
+  const cartTrigger  = document.getElementById('cartTrigger');
+  const cartDropdown = document.getElementById('cartDropdown');
+  const cartClose    = document.getElementById('cartClose');
+  const cartCountEl  = document.getElementById('cartCount');
+  const cartBody     = document.getElementById('cartBody');
+  const cartClear    = document.getElementById('cartClear');
+ 
+  function saveCart() { localStorage.setItem('lbdf_cart', JSON.stringify(cart)); }
+ 
+  function renderCart() {
+    cartCountEl.textContent = cart.length;
+ 
+    if (cart.length === 0) {
+      cartBody.innerHTML = '<p class="cart-dropdown__empty">Il carrello è vuoto.</p>';
+      return;
+    }
+ 
+    cartBody.innerHTML = cart.map((item, i) => `
+      <div class="cart-item">
+        <span class="cart-item__name">${item.name}</span>
+        <span class="cart-item__price">${item.price}</span>
+        <span class="cart-item__remove" data-idx="${i}" title="Rimuovi">✕</span>
+      </div>
+    `).join('');
+ 
+    cartBody.querySelectorAll('.cart-item__remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        cart.splice(+btn.dataset.idx, 1);
+        saveCart(); renderCart();
+      });
+    });
+  }
+ 
+  /* Toggle dropdown */
+  function toggleCart(e) {
+    e.stopPropagation();
+    cartDropdown.classList.toggle('open');
+  }
+ 
+  cartTrigger.addEventListener('click', toggleCart);
+  cartClose.addEventListener('click', () => cartDropdown.classList.remove('open'));
+ 
+  document.addEventListener('click', e => {
+    if (!cartDropdown.contains(e.target) && !cartTrigger.contains(e.target)) {
+      cartDropdown.classList.remove('open');
+    }
+  });
+ 
+  /* Clear */
+  cartClear.addEventListener('click', () => {
+    cart = []; saveCart(); renderCart();
+  });
+ 
+  /* Add to cart */
+  document.querySelectorAll('.add-to-cart').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const card  = btn.closest('.card');
+      const name  = card.querySelector('.card__name').textContent;
+      const price = card.querySelector('.card__price').textContent;
+ 
+      cart.push({ name, price });
+      saveCart(); renderCart();
+ 
+      /* Visual feedback */
+      btn.textContent = '✓ Aggiunto';
+      btn.classList.add('added');
+      setTimeout(() => {
+        btn.textContent = 'Aggiungi';
+        btn.classList.remove('added');
+      }, 1800);
+ 
+      /* Bump count animation */
+      cartTrigger.classList.add('bump');
+      setTimeout(() => cartTrigger.classList.remove('bump'), 300);
+    });
+  });
+ 
+  /* Init */
+  renderCart();
+ 
+  /* ── Seasonal filter ── */
+  const seasonBtns   = document.querySelectorAll('.season-btn');
+  const cards        = document.querySelectorAll('.card[data-season]');
+  const emptyMsg     = document.getElementById('emptyMsg');
+  const resultsCount = document.getElementById('resultsCount');
+ 
+  function applyFilter(season) {
+    let visible = 0;
+    cards.forEach(card => {
+      const seasons = card.dataset.season;
+      const show = season === 'tutti' || seasons === 'tutti' || seasons.split(' ').includes(season);
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+ 
+    emptyMsg.classList.toggle('visible', visible === 0);
+    resultsCount.textContent = visible > 0
+      ? `${visible} prodott${visible === 1 ? 'o' : 'i'} disponibil${visible === 1 ? 'e' : 'i'}`
+      : '';
+  }
+ 
+  seasonBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      seasonBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilter(btn.dataset.season);
+    });
+  });
+ 
+  applyFilter('tutti');
+ 
+  /* ── Burger menu ── */
+  const burger   = document.getElementById('burger');
+  const navLinks = document.getElementById('navLinks');
+  burger.addEventListener('click', () => navLinks.classList.toggle('open'));
+ 
+  /* ── Staggered card animation on filter ── */
+  function reanimateCards() {
+    const visible = [...cards].filter(c => c.style.display !== 'none');
+    visible.forEach((c, i) => {
+      c.style.animation = 'none';
+      c.offsetHeight; // reflow
+      c.style.animation = `cardIn .5s ease ${i * 0.06}s both`;
+    });
+  }
+ 
+  seasonBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      setTimeout(reanimateCards, 10);
+    });
+  });
+</script>
+ 
+</body>
+</html>
