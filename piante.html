@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/davideiacuzio005-source/La-botttega-del-fiore/main/favicon-32x32.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Piante — La Bottega del Fiore</title>
+  <title>Piante — Fioraio</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
  
   <style>
@@ -32,7 +32,6 @@
       overflow-x: hidden;
     }
  
-    /* ── Background texture ── */
     body::before {
       content: '';
       position: fixed;
@@ -62,6 +61,7 @@
       border-bottom: 1px solid rgba(184,155,106,0.18);
     }
  
+    /* Logo */
     .navbar__logo {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.35rem;
@@ -79,14 +79,32 @@
       font-size: 1.1rem;
     }
  
-    .navbar__links {
+    .navbar__logo .logo-sub {
+      display: block;
+      font-size: .55rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(44,37,32,.45);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      margin-top: 1px;
+    }
+ 
+    .navbar__logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+ 
+    /* Nav center links */
+    .navbar__center {
       display: flex;
       gap: 2rem;
       list-style: none;
       align-items: center;
     }
  
-    .navbar__links a {
+    .navbar__center a {
       font-size: .68rem;
       letter-spacing: .2em;
       text-transform: uppercase;
@@ -97,7 +115,7 @@
       transition: color .3s;
     }
  
-    .navbar__links a::after {
+    .navbar__center a::after {
       content: '';
       position: absolute;
       bottom: 0; left: 0;
@@ -106,11 +124,35 @@
       transition: width .35s ease;
     }
  
-    .navbar__links a:hover,
-    .navbar__links a.active { color: var(--blush); }
+    .navbar__center a:hover,
+    .navbar__center a.active { color: var(--blush); }
  
-    .navbar__links a:hover::after,
-    .navbar__links a.active::after { width: 100%; }
+    .navbar__center a:hover::after,
+    .navbar__center a.active::after { width: 100%; }
+ 
+    /* Nav right actions */
+    .navbar__actions {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+ 
+    .navbar__actions a {
+      font-size: .65rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(44,37,32,.55);
+      text-decoration: none;
+      transition: color .3s;
+    }
+ 
+    .navbar__actions a:hover { color: var(--blush); }
+ 
+    .navbar__actions-divider {
+      width: 1px;
+      height: 14px;
+      background: rgba(184,155,106,.35);
+    }
  
     /* Cart pill */
     .cart-pill {
@@ -125,7 +167,6 @@
       letter-spacing: .12em;
       text-transform: uppercase;
       transition: all .3s;
-      position: relative;
       background: transparent;
     }
  
@@ -147,6 +188,89 @@
     }
  
     .cart-pill.bump .cart-count { transform: scale(1.4); }
+ 
+    /* Burger */
+    .navbar__burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: .3rem;
+      z-index: 210;
+    }
+ 
+    .navbar__burger span {
+      display: block;
+      width: 22px; height: 1px;
+      background: var(--ink);
+      transition: .3s;
+    }
+ 
+    /* ── Mobile overlay menu ── */
+    .navbar__mobile-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 205;
+      background: rgba(44,37,32,.35);
+      opacity: 0;
+      transition: opacity .35s;
+      pointer-events: none;
+    }
+ 
+    .navbar__mobile-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+ 
+    .navbar__mobile-panel {
+      position: fixed;
+      top: 0; right: 0;
+      width: min(320px, 85vw);
+      height: 100%;
+      background: var(--cream);
+      z-index: 206;
+      padding: calc(var(--nav-h) + 2rem) 2.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      transform: translateX(100%);
+      transition: transform .4s cubic-bezier(.22,1,.36,1);
+    }
+ 
+    .navbar__mobile-panel.open {
+      transform: translateX(0);
+    }
+ 
+    .navbar__mobile-panel a {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: var(--ink);
+      text-decoration: none;
+      padding: .9rem 0;
+      border-bottom: 1px solid rgba(184,155,106,.18);
+      letter-spacing: .04em;
+      transition: color .3s;
+      display: block;
+    }
+ 
+    .navbar__mobile-panel a:last-child { border-bottom: none; }
+ 
+    .navbar__mobile-panel a:hover,
+    .navbar__mobile-panel a.active { color: var(--blush); }
+ 
+    .navbar__mobile-panel .mobile-label {
+      font-family: 'Jost', sans-serif;
+      font-size: .58rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+      display: block;
+    }
  
     /* Cart dropdown */
     .cart-dropdown {
@@ -215,13 +339,8 @@
     }
  
     .cart-item:last-child { border-bottom: none; }
- 
     .cart-item__name { font-weight: 500; flex: 1; }
- 
-    .cart-item__price {
-      color: var(--moss);
-      white-space: nowrap;
-    }
+    .cart-item__price { color: var(--moss); white-space: nowrap; }
  
     .cart-item__remove {
       cursor: pointer;
@@ -274,10 +393,7 @@
       z-index: 0;
     }
  
-    .hero-content {
-      position: relative;
-      z-index: 1;
-    }
+    .hero-content { position: relative; z-index: 1; }
  
     .hero-eyebrow {
       font-size: .65rem;
@@ -308,10 +424,7 @@
       letter-spacing: -.01em;
     }
  
-    .page-hero h1 em {
-      font-style: italic;
-      color: var(--blush);
-    }
+    .page-hero h1 em { font-style: italic; color: var(--blush); }
  
     .hero-sub {
       margin-top: 1.5rem;
@@ -322,7 +435,7 @@
     }
  
     /* ══════════════════════════════
-       SEASON INDICATOR
+       SEASON BAR
     ══════════════════════════════ */
     .season-bar {
       display: flex;
@@ -378,7 +491,7 @@
     }
  
     /* ══════════════════════════════
-       RESULTS INFO
+       RESULTS BAR
     ══════════════════════════════ */
     .results-bar {
       max-width: 1200px;
@@ -442,7 +555,6 @@
       box-shadow: 0 24px 50px rgba(44,37,32,.1);
     }
  
-    /* Image */
     .card__img {
       position: relative;
       aspect-ratio: 4/3;
@@ -459,7 +571,6 @@
  
     .card:hover .card__img img { transform: scale(1.07); }
  
-    /* Overlay gradient on image */
     .card__img::after {
       content: '';
       position: absolute;
@@ -471,7 +582,6 @@
  
     .card:hover .card__img::after { opacity: 1; }
  
-    /* Badge */
     .card__badge {
       position: absolute;
       top: 12px; left: 12px;
@@ -486,7 +596,6 @@
       z-index: 2;
     }
  
-    /* Body */
     .card__body {
       padding: 1.4rem 1.4rem 1.5rem;
       position: relative;
@@ -521,7 +630,6 @@
       font-style: italic;
     }
  
-    /* Add to cart button */
     .add-to-cart {
       border: 1px solid var(--moss);
       background: transparent;
@@ -575,7 +683,7 @@
     }
  
     /* ══════════════════════════════
-       FOOTER STRIP
+       FOOTER
     ══════════════════════════════ */
     .footer-strip {
       text-align: center;
@@ -590,40 +698,17 @@
     /* ══════════════════════════════
        RESPONSIVE
     ══════════════════════════════ */
-    .navbar__burger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: .3rem;
-    }
- 
-    .navbar__burger span {
-      display: block;
-      width: 22px; height: 1px;
-      background: var(--ink);
-      transition: .3s;
-    }
- 
     @media (max-width: 768px) {
       .navbar { padding: 0 1.5rem; }
  
+      .navbar__center { display: none; }
+ 
       .navbar__burger { display: flex; }
  
-      .navbar__links {
-        position: fixed;
-        inset: var(--nav-h) 0 0 0;
-        background: rgba(247,242,235,.97);
-        flex-direction: column;
-        justify-content: center;
-        gap: 2rem;
-        transform: translateX(100%);
-        transition: transform .4s cubic-bezier(.22,1,.36,1);
-      }
+      .navbar__mobile-overlay { display: block; }
  
-      .navbar__links.open { transform: translateX(0); }
+      .navbar__actions a,
+      .navbar__actions-divider { display: none; }
  
       .season-bar { flex-wrap: wrap; gap: .3rem; }
       .season-divider { display: none; }
@@ -644,25 +729,43 @@
 ════════════════════════════════ -->
 <nav class="navbar">
   <a class="navbar__logo" href="index.html">
-    <span class="logo-ornament">✿</span> La Bottega del Fiore
+    <span class="logo-ornament">✿</span>
+    <span class="navbar__logo-text">
+      Fioraio
+      <span class="logo-sub">Florist · Artigiano</span>
+    </span>
   </a>
+ 
+  <ul class="navbar__center">
+    <li><a href="composizione.html">Composizioni</a></li>
+    <li><a href="piante.html" class="active">Piante</a></li>
+  </ul>
+ 
+  <div class="navbar__actions">
+    <a href="tel:0522576309">Contattaci</a>
+    <div class="navbar__actions-divider"></div>
+    <a href="https://maps.app.goo.gl/P2EiUiBZ4B3QrrhD7?g_st=ic" target="_blank">Trovaci</a>
+    <div class="navbar__actions-divider"></div>
+    <div class="cart-pill" id="cartTrigger" role="button" aria-label="Carrello">
+      <span>🛒</span>
+      <span class="cart-count" id="cartCount">0</span>
+    </div>
+  </div>
  
   <button class="navbar__burger" id="burger" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
- 
-  <ul class="navbar__links" id="navLinks">
-    <li><a href="composizione.html">Composizioni</a></li>
-    <li><a href="piante.html" class="active">Piante</a></li>
-    <li><a href="tel:0522576309">Contattaci</a></li>
-    <li><a href="https://maps.app.goo.gl/P2EiUiBZ4B3QrrhD7?g_st=ic" target="_blank">Trovaci su Maps</a></li>
-  </ul>
- 
-  <div class="cart-pill" id="cartTrigger" role="button" aria-label="Carrello">
-    <span>🛒</span>
-    <span class="cart-count" id="cartCount">0</span>
-  </div>
 </nav>
+ 
+<!-- Mobile overlay -->
+<div class="navbar__mobile-overlay" id="mobileOverlay"></div>
+<div class="navbar__mobile-panel" id="mobilePanel">
+  <span class="mobile-label">Menu</span>
+  <a href="composizione.html">Composizioni</a>
+  <a href="piante.html" class="active">Piante</a>
+  <a href="tel:0522576309">Contattaci</a>
+  <a href="https://maps.app.goo.gl/P2EiUiBZ4B3QrrhD7?g_st=ic" target="_blank">Trovaci su Maps</a>
+</div>
  
 <!-- Cart dropdown -->
 <div class="cart-dropdown" id="cartDropdown">
@@ -684,7 +787,7 @@
 <header class="page-hero">
   <div class="hero-ornament">Fiori</div>
   <div class="hero-content">
-    <p class="hero-eyebrow">La Bottega del Fiore</p>
+    <p class="hero-eyebrow">Fioraio</p>
     <h1>Piante &amp; <em>Fiori</em></h1>
     <p class="hero-sub">Scegli in base alla stagione</p>
   </div>
@@ -897,7 +1000,7 @@
      FOOTER
 ════════════════════════════════ -->
 <footer class="footer-strip">
-  ✿ La Bottega del Fiore &nbsp;·&nbsp; Nonantola &nbsp;·&nbsp; Tel. 0522 576309
+  ✿ Fioraio &nbsp;·&nbsp; Nonantola &nbsp;·&nbsp; Tel. 0522 576309
 </footer>
  
 <!-- ════════════════════════════════
@@ -918,12 +1021,10 @@
  
   function renderCart() {
     cartCountEl.textContent = cart.length;
- 
     if (cart.length === 0) {
       cartBody.innerHTML = '<p class="cart-dropdown__empty">Il carrello è vuoto.</p>';
       return;
     }
- 
     cartBody.innerHTML = cart.map((item, i) => `
       <div class="cart-item">
         <span class="cart-item__name">${item.name}</span>
@@ -931,7 +1032,6 @@
         <span class="cart-item__remove" data-idx="${i}" title="Rimuovi">✕</span>
       </div>
     `).join('');
- 
     cartBody.querySelectorAll('.cart-item__remove').forEach(btn => {
       btn.addEventListener('click', () => {
         cart.splice(+btn.dataset.idx, 1);
@@ -940,7 +1040,6 @@
     });
   }
  
-  /* Toggle dropdown */
   function toggleCart(e) {
     e.stopPropagation();
     cartDropdown.classList.toggle('open');
@@ -948,43 +1047,28 @@
  
   cartTrigger.addEventListener('click', toggleCart);
   cartClose.addEventListener('click', () => cartDropdown.classList.remove('open'));
- 
   document.addEventListener('click', e => {
     if (!cartDropdown.contains(e.target) && !cartTrigger.contains(e.target)) {
       cartDropdown.classList.remove('open');
     }
   });
+  cartClear.addEventListener('click', () => { cart = []; saveCart(); renderCart(); });
  
-  /* Clear */
-  cartClear.addEventListener('click', () => {
-    cart = []; saveCart(); renderCart();
-  });
- 
-  /* Add to cart */
   document.querySelectorAll('.add-to-cart').forEach(btn => {
     btn.addEventListener('click', () => {
       const card  = btn.closest('.card');
       const name  = card.querySelector('.card__name').textContent;
       const price = card.querySelector('.card__price').textContent;
- 
       cart.push({ name, price });
       saveCart(); renderCart();
- 
-      /* Visual feedback */
       btn.textContent = '✓ Aggiunto';
       btn.classList.add('added');
-      setTimeout(() => {
-        btn.textContent = 'Aggiungi';
-        btn.classList.remove('added');
-      }, 1800);
- 
-      /* Bump count animation */
+      setTimeout(() => { btn.textContent = 'Aggiungi'; btn.classList.remove('added'); }, 1800);
       cartTrigger.classList.add('bump');
       setTimeout(() => cartTrigger.classList.remove('bump'), 300);
     });
   });
  
-  /* Init */
   renderCart();
  
   /* ── Seasonal filter ── */
@@ -1001,7 +1085,6 @@
       card.style.display = show ? '' : 'none';
       if (show) visible++;
     });
- 
     emptyMsg.classList.toggle('visible', visible === 0);
     resultsCount.textContent = visible > 0
       ? `${visible} prodott${visible === 1 ? 'o' : 'i'} disponibil${visible === 1 ? 'e' : 'i'}`
@@ -1013,31 +1096,43 @@
       seasonBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       applyFilter(btn.dataset.season);
+      setTimeout(reanimateCards, 10);
     });
   });
  
   applyFilter('tutti');
  
-  /* ── Burger menu ── */
-  const burger   = document.getElementById('burger');
-  const navLinks = document.getElementById('navLinks');
-  burger.addEventListener('click', () => navLinks.classList.toggle('open'));
+  /* ── Burger / mobile menu ── */
+  const burger        = document.getElementById('burger');
+  const mobileOverlay = document.getElementById('mobileOverlay');
+  const mobilePanel   = document.getElementById('mobilePanel');
  
-  /* ── Staggered card animation on filter ── */
+  function openMobileMenu() {
+    mobileOverlay.classList.add('open');
+    mobilePanel.classList.add('open');
+  }
+ 
+  function closeMobileMenu() {
+    mobileOverlay.classList.remove('open');
+    mobilePanel.classList.remove('open');
+  }
+ 
+  burger.addEventListener('click', () => {
+    const isOpen = mobilePanel.classList.contains('open');
+    isOpen ? closeMobileMenu() : openMobileMenu();
+  });
+ 
+  mobileOverlay.addEventListener('click', closeMobileMenu);
+ 
+  /* ── Staggered card animation ── */
   function reanimateCards() {
     const visible = [...cards].filter(c => c.style.display !== 'none');
     visible.forEach((c, i) => {
       c.style.animation = 'none';
-      c.offsetHeight; // reflow
+      c.offsetHeight;
       c.style.animation = `cardIn .5s ease ${i * 0.06}s both`;
     });
   }
- 
-  seasonBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      setTimeout(reanimateCards, 10);
-    });
-  });
 </script>
  
 </body>
