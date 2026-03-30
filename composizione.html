@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/davideiacuzio005-source/La-botttega-del-fiore/main/favicon-32x32.png" sizes="32x32">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Composizioni – Fioraio</title>
+ 
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+ 
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+ 
+    :root {
+      --cream:  #f7f2eb;
+      --petal:  #e8d5c4;
+      --sage:   #7a8c6e;
+      --moss:   #4a5e3a;
+      --blush:  #c9877a;
+      --ink:    #2c2520;
+      --gold:   #b89b6a;
+      --white:  #ffffff;
+    }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+ 
+    /* =============================================
+       NAVBAR
+    ============================================= */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      background: rgba(247,242,235,.93);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(184,155,106,.2);
+      transition: box-shadow .3s;
+    }
+ 
+    nav.scrolled { box-shadow: 0 4px 24px rgba(44,37,32,.08); }
+ 
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+      height: 72px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+    }
+ 
+    /* Links sx/dx (desktop) */
+    .nav-left  { display:flex; gap:2rem; }
+    .nav-right { display:flex; gap:2rem; justify-content:flex-end; }
+ 
+    .nav-link {
+      font-size: .72rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      opacity: .75;
+      transition: opacity .2s, color .2s;
+      position: relative;
+      padding-bottom: 2px;
+    }
+ 
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width .3s;
+    }
+ 
+    .nav-link:hover        { opacity: 1; }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link.active       { opacity: 1; color: var(--moss); }
+    .nav-link.active::after{ width: 100%; background: var(--moss); }
+ 
+    /* Logo */
+    .logo {
+      text-align: center;
+      text-decoration: none;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+ 
+    .logo-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-weight: 300;
+      letter-spacing: .08em;
+    }
+ 
+    .logo-tagline {
+      font-size: .6rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+ 
+    /* ── Hamburger (mobile) ── */
+    .burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      justify-self: end;
+    }
+ 
+    .burger span {
+      display: block;
+      width: 22px; height: 1.5px;
+      background: var(--ink);
+      transition: transform .35s, opacity .35s;
+    }
+ 
+    .burger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; }
+    .burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+ 
+    /* ── Drawer mobile ── */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 72px; left: 0; right: 0;
+      background: rgba(247,242,235,.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(184,155,106,.2);
+      flex-direction: column;
+      padding: 1.5rem 2.5rem 2rem;
+      gap: 1.4rem;
+      z-index: 190;
+      animation: slideDown .3s ease;
+    }
+ 
+    .mobile-menu.open { display: flex; }
+ 
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    .mobile-menu .nav-link {
+      font-size: .8rem;
+      opacity: .8;
+    }
+ 
+    .mobile-divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(184,155,106,.25);
+    }
+ 
+    /* =============================================
+       HERO
+    ============================================= */
+    .page-hero {
+      padding: 11rem 2rem 5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+ 
+    /* Sfondo decorativo */
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 40%, rgba(201,135,122,.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 80% 60%, rgba(122,140,110,.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+ 
+    .hero-eyebrow {
+      font-size: .68rem;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+      animation: fadeUp .8s ease both;
+    }
+ 
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 7vw, 5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      animation: fadeUp .8s .1s ease both;
+    }
+ 
+    .page-title em {
+      font-style: italic;
+      color: var(--blush);
+    }
+ 
+    .page-desc {
+      font-size: .9rem;
+      color: rgba(44,37,32,.6);
+      max-width: 460px;
+      margin: 0 auto;
+      line-height: 1.8;
+      animation: fadeUp .8s .2s ease both;
+    }
+ 
+    .hero-ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin: 2.5rem auto 0;
+      animation: fadeUp .8s .3s ease both;
+    }
+ 
+    .hero-ornament::before,
+    .hero-ornament::after {
+      content: '';
+      width: 60px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+ 
+    .hero-ornament::after {
+      background: linear-gradient(to left, transparent, var(--gold));
+    }
+ 
+    .hero-ornament span {
+      color: var(--gold);
+      font-size: .8rem;
+      letter-spacing: .2em;
+    }
+ 
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+ 
+    /* =============================================
+       SEZIONE COMPOSIZIONI
+    ============================================= */
+    .compositions-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 2rem 6rem;
+    }
+ 
+    /* Intro testo piccolo sopra la griglia */
+    .section-intro {
+      text-align: center;
+      font-size: .72rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 3.5rem;
+    }
+ 
+    /* Griglia */
+    .compositions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 1.8rem;
+    }
+ 
+    /* Card */
+    .card {
+      position: relative;
+      background: var(--white);
+      border: 1px solid rgba(184,155,106,.18);
+      overflow: hidden;
+      transition: transform .35s cubic-bezier(.22,.61,.36,1), box-shadow .35s;
+    }
+ 
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 48px rgba(44,37,32,.1);
+    }
+ 
+    /* Fascia colorata in cima alla card */
+    .card-color-bar {
+      height: 4px;
+      background: linear-gradient(90deg, var(--blush), var(--gold));
+      transition: height .3s;
+    }
+ 
+    .card:hover .card-color-bar { height: 6px; }
+ 
+    /* Varianti colore barra per ogni card */
+    .card:nth-child(2) .card-color-bar { background: linear-gradient(90deg, var(--gold), var(--petal)); }
+    .card:nth-child(3) .card-color-bar { background: linear-gradient(90deg, var(--sage), var(--moss)); }
+    .card:nth-child(4) .card-color-bar { background: linear-gradient(90deg, var(--moss), var(--sage)); }
+ 
+    .card-body { padding: 2rem 2rem 2.2rem; }
+ 
+    /* Numero decorativo */
+    .card-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.5rem;
+      font-weight: 300;
+      color: rgba(184,155,106,.15);
+      line-height: 1;
+      margin-bottom: -.8rem;
+    }
+ 
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem;
+      font-weight: 400;
+      margin-bottom: .35rem;
+      line-height: 1.1;
+    }
+ 
+    .card-sub {
+      font-size: .65rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+ 
+    .card-desc {
+      font-size: .83rem;
+      line-height: 1.75;
+      color: rgba(44,37,32,.65);
+      margin-bottom: 1.8rem;
+    }
+ 
+    /* Footer card: prezzo + tag */
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1.2rem;
+      border-top: 1px solid rgba(184,155,106,.18);
+    }
+ 
+    .card-price {
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .1em;
+      color: var(--moss);
+    }
+ 
+    .card-tag {
+      font-size: .6rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--blush);
+    }
+ 
+    /* Card "Su misura" – stile speciale */
+    .card.special {
+      background: linear-gradient(135deg, #2d3d28 0%, var(--moss) 100%);
+      border-color: transparent;
+      color: var(--cream);
+    }
+ 
+    .card.special .card-number { color: rgba(247,242,235,.1); }
+    .card.special .card-title  { color: var(--cream); }
+    .card.special .card-sub    { color: rgba(184,155,106,.9); }
+    .card.special .card-desc   { color: rgba(247,242,235,.65); }
+    .card.special .card-footer { border-color: rgba(255,255,255,.12); }
+    .card.special .card-price  { color: var(--petal); }
+    .card.special .card-tag    { color: rgba(247,242,235,.5); }
+    .card.special .card-color-bar { background: linear-gradient(90deg, rgba(255,255,255,.3), transparent); }
+ 
+    /* Bottone nella card speciale */
+    .card-cta {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: .75rem 1.6rem;
+
+  font-size: .72rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+
+  background: var(--moss);
+  color: var(--white);
+
+  border: 1px solid var(--moss);
+  border-radius: 4px;
+
+  text-decoration: none;
+  font-weight: 500;
+
+  transition: all .3s ease;
+}
+
+.card-cta:hover {
+  background: var(--blush);
+  border-color: var(--blush);
+  color: var(--white);
+}
+ 
+    /* =============================================
+       CTA FINALE
+    ============================================= */
+    .cta-section {
+      margin: 0 2rem 6rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      padding: 4.5rem 3rem;
+      border: 1px solid rgba(184,155,106,.25);
+      position: relative;
+      overflow: hidden;
+    }
+ 
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 80% at 50% 100%, rgba(201,135,122,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+ 
+    .cta-eyebrow {
+      font-size: .65rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+ 
+    .cta-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 300;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+ 
+    .cta-desc {
+      font-size: .85rem;
+      color: rgba(44,37,32,.6);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+ 
+    .btn {
+      display: inline-block;
+      padding: .85rem 2.4rem;
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      background: var(--moss);
+      color: var(--cream);
+      text-decoration: none;
+      border: 1px solid var(--moss);
+      transition: background .3s, color .3s;
+    }
+ 
+    .btn:hover {
+      background: transparent;
+      color: var(--moss);
+    }
+ 
+    /* =============================================
+       FOOTER MINIMO
+    ============================================= */
+    footer {
+      border-top: 1px solid rgba(184,155,106,.18);
+      padding: 2rem;
+      text-align: center;
+      font-size: .68rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(44,37,32,.35);
+    }
+ 
+    /* =============================================
+       RESPONSIVE
+    ============================================= */
+    @media (max-width: 768px) {
+      .nav-left, .nav-right { display: none; }
+      .burger { display: flex; }
+ 
+      /* ridistribuisci la nav a 2 colonne: logo + hamburger */
+      .nav-inner {
+        grid-template-columns: 1fr auto;
+        padding: 0 1.5rem;
+      }
+ 
+      .logo { justify-self: start; }
+ 
+      .page-title { font-size: 2.6rem; }
+    }
+  </style>
+</head>
+<body>
+ 
+<!-- =============================================
+     NAVBAR
+============================================= -->
+<nav class="navbar">
+  <div class="nav-inner">
+    
+    <!-- COLONNA SINISTRA -->
+    <div class="nav-left">
+      <a href="composizioni.html" class="nav-link active">Composizioni</a>
+      <a href="piante.html" class="nav-link">Piante</a>
+    </div>
+ 
+    <!-- Logo -->
+    <a href="index.html" class="logo">
+      <span class="logo-name">Fioraio</span>
+      <span class="logo-tagline">Atelier floreale</span>
+    </a>
+ 
+    <!-- COLONNA DESTRA -->
+    <div class="nav-right">
+      <a href="tel:0522576309" class="nav-link">Contattaci</a>
+      <a href="https://maps.app.goo.gl/P2EiUiBZ4B3QrrhD7?g_st=ic" target="_blank" class="nav-link">Trovaci su Maps</a>
+    </div>
+
+    <!-- Hamburger (mobile) -->
+    <button class="burger" id="burger" aria-label="Apri menu">
+      <span></span><span></span><span></span>
+    </button>
+ 
+  </div>
+</nav>
+ 
+<!-- Drawer mobile -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="composizione.html" class="nav-link active">Composizioni</a>
+  <div class="mobile-divider"></div>
+  <a href="piante.html" class="nav-link">Piante</a>
+  <div class="mobile-divider"></div>
+  <a href="contatti.html" class="nav-link">Contattaci</a>
+  <div class="mobile-divider"></div>
+  <a href="https://maps.app.goo.gl/P2EiUiBZ4B3QrrhD7?g_st=ic" target="_blank" class="nav-link">Trovaci su Maps</a>
+</div>
+ 
+<!-- =============================================
+     HERO
+============================================= -->
+<section class="page-hero">
+  <p class="hero-eyebrow">Fioraio — Atelier floreale</p>
+  <h1 class="page-title">Le nostre<br><em>composizioni</em></h1>
+  <p class="page-desc">
+    Creazioni floreali realizzate a mano, pensate per ogni occasione.
+    Eleganza, natura e armonia in ogni dettaglio.
+  </p>
+  <div class="hero-ornament"><span>✦</span></div>
+</section>
+ 
+<!-- =============================================
+     COMPOSIZIONI
+============================================= -->
+<section class="compositions-section">
+  <p class="section-intro">Scopri le nostre proposte</p>
+ 
+  <div class="compositions-grid">
+ 
+    <!-- ── Bouquet Classico ── -->
+    <div class="card">
+      <div class="card-color-bar"></div>
+      <div class="card-body">
+        <div class="card-number">01</div>
+        <h2 class="card-title">Bouquet Classico</h2>
+        <p class="card-sub">Eleganza senza tempo</p>
+        <p class="card-desc">
+          Composizione armoniosa con fiori stagionali selezionati,
+          perfetta per ogni occasione — dal compleanno a un semplice
+          pensiero spontaneo.
+        </p>
+        <div class="card-footer">
+          <span class="card-price">A partire da €25</span>
+          <span class="card-tag">Stagionale</span>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- ── Romantico ── -->
+    <div class="card">
+      <div class="card-color-bar"></div>
+      <div class="card-body">
+        <div class="card-number">02</div>
+        <h2 class="card-title">Romantico</h2>
+        <p class="card-sub">Toni delicati</p>
+        <p class="card-desc">
+          Rose, sfumature cipria e dettagli morbidi per un regalo
+          carico di emozione. Pensato per chi vuole emozionare
+          con garbo e profondità.
+        </p>
+        <div class="card-footer">
+          <span class="card-price">A partire da €35</span>
+          <span class="card-tag">Rose &amp; peonie</span>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- ── Moderno ── -->
+    <div class="card">
+      <div class="card-color-bar"></div>
+      <div class="card-body">
+        <div class="card-number">03</div>
+        <h2 class="card-title">Moderno</h2>
+        <p class="card-sub">Linee essenziali</p>
+        <p class="card-desc">
+          Design contemporaneo con forme pulite e contrasti naturali.
+          Perfetto per chi ama uno stile raffinato e fuori dagli
+          schemi tradizionali.
+        </p>
+        <div class="card-footer">
+          <span class="card-price">A partire da €40</span>
+          <span class="card-tag">Design</span>
+        </div>
+      </div>
+    </div>
+
+     <!-- ── CREA COMPOSIZIONE ── -->
+    <div class="card">
+      <div class="card-color-bar"></div>
+      <div class="card-body">
+        <div class="card-number">04</div>
+        <h2 class="card-title">Crea la tua Composizione</h2>
+        <p class="card-sub">scegli tu cosa inserire nella tua composizione</p>
+        <p class="card-desc">
+          Consigliato per chi vuolre realizzare una singola composizione 
+        </p>
+        <div class="card-footer">
+          <a href="creacomposizione.html" class="card-cta">Crea ora</a>
+          <span class="card-tag">Design</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ── Su misura (card speciale) ── -->
+    <div class="card special">
+      <div class="card-color-bar"></div>
+      <div class="card-body">
+        <div class="card-number">05</div>
+        <h2 class="card-title">Su misura</h2>
+        <p class="card-sub">Per ogni occasione</p>
+        <p class="card-desc">
+          Matrimoni, cerimonie, allestimenti esclusivi.
+          Progettiamo insieme il tuo sogno floreale,
+          dal concept al dettaglio finale.
+        </p>
+        <div class="card-footer">
+          <span class="card-price">Preventivo personalizzato</span>
+          <span class="card-tag">Esclusivo</span>
+        </div>
+        <a href="tel:0522576309" class="card-cta">Richiedi un preventivo</a>
+      </div>
+    </div>
+ 
+  </div>
+</section>
+ 
+<!-- =============================================
+     CTA FINALE
+============================================= -->
+<section class="cta-section">
+  <p class="cta-eyebrow">Hai un'idea in mente?</p>
+  <h2 class="cta-title">Creiamo qualcosa di unico insieme</h2>
+  <p class="cta-desc">
+    Ogni fiore racconta una storia. Scrivici e trasformiamo
+    la tua idea in una composizione indimenticabile.
+  </p>
+  <a href="tel:0522576309" class="btn">Contattaci</a>
+</section>
+ 
+<!-- =============================================
+     FOOTER
+============================================= -->
+<footer>
+  © 2025 La Bottega del Fiore — Tutti i diritti riservati
+</footer>
+ 
+<!-- =============================================
+     JAVASCRIPT
+============================================= -->
+<script>
+  /* Hamburger toggle */
+  const burger     = document.getElementById('burger');
+  const mobileMenu = document.getElementById('mobileMenu');
+ 
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+ 
+  /* Chiudi menu cliccando un link */
+  mobileMenu.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      burger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    });
+  });
+ 
+  /* Ombra navbar allo scroll */
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+  });
+</script>
+ 
+</body>
+</html>
