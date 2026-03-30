@@ -39,7 +39,9 @@
       pointer-events:none; z-index:0;
     }
  
-    /* ── NAVBAR ── */
+    /* ══════════════════════════════
+       NAVBAR
+    ══════════════════════════════ */
     .navbar {
       position:fixed; inset:0 0 auto 0;
       z-index:200; height:var(--nav-h);
@@ -47,6 +49,7 @@
       padding:0 3rem;
       background:rgba(247,242,235,.88);
       backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
       border-bottom:1px solid rgba(184,155,106,.18);
     }
  
@@ -54,28 +57,61 @@
       font-family:'Cormorant Garamond', serif;
       font-size:1.35rem; font-weight:400; letter-spacing:.1em;
       color:var(--ink); text-decoration:none;
+      display:flex; align-items:center; gap:.5rem;
     }
  
-    .navbar__logo .logo-ornament { color:var(--blush); }
+    .navbar__logo .logo-ornament { color:var(--blush); font-size:1.1rem; }
  
-    .navbar__links {
+    .navbar__logo-text {
+      display:flex; flex-direction:column; line-height:1.15;
+    }
+ 
+    .navbar__logo .logo-sub {
+      display:block;
+      font-size:.55rem; letter-spacing:.22em; text-transform:uppercase;
+      color:rgba(44,37,32,.45); font-family:'Jost', sans-serif;
+      font-weight:300; margin-top:1px;
+    }
+ 
+    /* Center nav links */
+    .navbar__center {
       display:flex; gap:2rem; list-style:none; align-items:center;
     }
  
-    .navbar__links a {
+    .navbar__center a {
       font-size:.68rem; letter-spacing:.2em; text-transform:uppercase;
       color:var(--ink); text-decoration:none; position:relative; padding-bottom:3px;
       transition:color .3s;
     }
  
-    .navbar__links a::after {
+    .navbar__center a::after {
       content:''; position:absolute; bottom:0; left:0;
       width:0; height:1px; background:var(--blush); transition:width .35s ease;
     }
  
-    .navbar__links a:hover, .navbar__links a.active { color:var(--blush); }
-    .navbar__links a:hover::after, .navbar__links a.active::after { width:100%; }
+    .navbar__center a:hover,
+    .navbar__center a.active { color:var(--blush); }
  
+    .navbar__center a:hover::after,
+    .navbar__center a.active::after { width:100%; }
+ 
+    /* Right actions */
+    .navbar__actions {
+      display:flex; align-items:center; gap:1.2rem;
+    }
+ 
+    .navbar__actions a {
+      font-size:.65rem; letter-spacing:.18em; text-transform:uppercase;
+      color:rgba(44,37,32,.55); text-decoration:none; transition:color .3s;
+    }
+ 
+    .navbar__actions a:hover { color:var(--blush); }
+ 
+    .navbar__actions-divider {
+      width:1px; height:14px; background:rgba(184,155,106,.35);
+    }
+ 
+    /* Cart pill */
     .cart-pill {
       display:flex; align-items:center; gap:.5rem; cursor:pointer;
       padding:.45rem 1rem; border:1px solid rgba(74,94,58,.25); border-radius:50px;
@@ -91,23 +127,61 @@
       display:flex; align-items:center; justify-content:center;
     }
  
+    /* Burger */
     .navbar__burger {
       display:none; flex-direction:column; gap:5px;
-      cursor:pointer; background:none; border:none; padding:.3rem;
+      cursor:pointer; background:none; border:none; padding:.3rem; z-index:210;
     }
  
-    .navbar__burger span { display:block; width:22px; height:1px; background:var(--ink); }
+    .navbar__burger span { display:block; width:22px; height:1px; background:var(--ink); transition:.3s; }
+ 
+    /* Mobile overlay menu */
+    .navbar__mobile-overlay {
+      display:none;
+      position:fixed; inset:0; z-index:205;
+      background:rgba(44,37,32,.35);
+      opacity:0; transition:opacity .35s; pointer-events:none;
+    }
+ 
+    .navbar__mobile-overlay.open { opacity:1; pointer-events:all; }
+ 
+    .navbar__mobile-panel {
+      position:fixed; top:0; right:0;
+      width:min(320px, 85vw); height:100%;
+      background:var(--cream); z-index:206;
+      padding:calc(var(--nav-h) + 2rem) 2.5rem 3rem;
+      display:flex; flex-direction:column; gap:0;
+      transform:translateX(100%);
+      transition:transform .4s cubic-bezier(.22,1,.36,1);
+    }
+ 
+    .navbar__mobile-panel.open { transform:translateX(0); }
+ 
+    .navbar__mobile-panel a {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.6rem; font-weight:300;
+      color:var(--ink); text-decoration:none;
+      padding:.9rem 0; border-bottom:1px solid rgba(184,155,106,.18);
+      letter-spacing:.04em; transition:color .3s; display:block;
+    }
+ 
+    .navbar__mobile-panel a:last-child { border-bottom:none; }
+    .navbar__mobile-panel a:hover,
+    .navbar__mobile-panel a.active { color:var(--blush); }
+ 
+    .navbar__mobile-panel .mobile-label {
+      font-family:'Jost', sans-serif;
+      font-size:.58rem; letter-spacing:.25em; text-transform:uppercase;
+      color:var(--gold); margin-bottom:1.2rem; display:block;
+    }
  
     @media(max-width:768px) {
       .navbar { padding:0 1.5rem; }
+      .navbar__center { display:none; }
       .navbar__burger { display:flex; }
-      .navbar__links {
-        position:fixed; inset:var(--nav-h) 0 0 0;
-        background:rgba(247,242,235,.97);
-        flex-direction:column; justify-content:center; gap:2rem;
-        transform:translateX(100%); transition:transform .4s cubic-bezier(.22,1,.36,1);
-      }
-      .navbar__links.open { transform:translateX(0); }
+      .navbar__mobile-overlay { display:block; }
+      .navbar__actions a,
+      .navbar__actions-divider { display:none; }
     }
  
     /* ── HERO ── */
@@ -170,9 +244,7 @@
       border:1px solid rgba(184,155,106,.3);
       display:flex; align-items:center; justify-content:center;
       font-size:.65rem; letter-spacing:.1em;
-      color:rgba(44,37,32,.35);
-      transition:all .4s;
-      background:var(--cream);
+      color:rgba(44,37,32,.35); transition:all .4s; background:var(--cream);
     }
  
     .step-item.active .step-circle {
@@ -194,11 +266,10 @@
  
     .step-line {
       flex:1; max-width:80px; height:1px;
-      background:rgba(184,155,106,.25);
-      margin-bottom:1.4rem;
+      background:rgba(184,155,106,.25); margin-bottom:1.4rem;
     }
  
-    /* ── LAYOUT PRINCIPALE ── */
+    /* ── LAYOUT ── */
     .composer {
       max-width:1200px; margin:0 auto;
       padding:0 2rem 6rem;
@@ -212,7 +283,7 @@
       .composer { grid-template-columns:1fr; }
     }
  
-    /* ── PANNELLO SINISTRA: selezione fiori ── */
+    /* ── PANNELLO SINISTRA ── */
     .panel {
       background:white;
       border:1px solid rgba(184,155,106,.18);
@@ -234,23 +305,19 @@
       color:rgba(44,37,32,.4);
     }
  
-    /* Search + filter bar */
     .flowers-toolbar {
       padding:1rem 1.8rem;
       display:flex; gap:.8rem; flex-wrap:wrap;
       border-bottom:1px solid rgba(184,155,106,.1);
     }
  
-    .search-wrap {
-      flex:1; min-width:160px; position:relative;
-    }
+    .search-wrap { flex:1; min-width:160px; position:relative; }
  
     .search-wrap input {
       width:100%; padding:.55rem 1rem .55rem 2.2rem;
       border:1px solid rgba(184,155,106,.25);
       background:var(--cream); font-family:'Jost', sans-serif;
-      font-size:.78rem; color:var(--ink); outline:none;
-      transition:border .3s;
+      font-size:.78rem; color:var(--ink); outline:none; transition:border .3s;
     }
  
     .search-wrap input:focus { border-color:var(--blush); }
@@ -260,9 +327,7 @@
       font-size:.75rem; color:rgba(44,37,32,.35); pointer-events:none;
     }
  
-    .tag-filters {
-      display:flex; gap:.4rem; flex-wrap:wrap; align-items:center;
-    }
+    .tag-filters { display:flex; gap:.4rem; flex-wrap:wrap; align-items:center; }
  
     .tag-btn {
       border:1px solid rgba(184,155,106,.25); background:transparent;
@@ -272,18 +337,13 @@
       color:rgba(44,37,32,.5);
     }
  
-    .tag-btn:hover, .tag-btn.active {
-      border-color:var(--blush); color:var(--blush);
-    }
+    .tag-btn:hover, .tag-btn.active { border-color:var(--blush); color:var(--blush); }
  
-    /* Fiori grid */
     .flowers-grid {
       display:grid;
       grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
-      gap:1rem;
-      padding:1.4rem 1.8rem;
-      max-height:480px;
-      overflow-y:auto;
+      gap:1rem; padding:1.4rem 1.8rem;
+      max-height:480px; overflow-y:auto;
     }
  
     .flowers-grid::-webkit-scrollbar { width:4px; }
@@ -292,18 +352,13 @@
  
     .flower-card {
       position:relative; cursor:pointer;
-      border:2px solid transparent;
-      transition:all .3s;
-      background:var(--cream);
+      border:2px solid transparent; transition:all .3s; background:var(--cream);
     }
  
     .flower-card:hover { border-color:rgba(201,135,122,.4); }
- 
     .flower-card.selected { border-color:var(--blush); }
  
-    .flower-card__img {
-      aspect-ratio:1/1; overflow:hidden;
-    }
+    .flower-card__img { aspect-ratio:1/1; overflow:hidden; }
  
     .flower-card__img img {
       width:100%; height:100%; object-fit:cover;
@@ -312,26 +367,20 @@
  
     .flower-card:hover .flower-card__img img { transform:scale(1.08); }
  
-    .flower-card__info {
-      padding:.6rem .7rem;
-    }
+    .flower-card__info { padding:.6rem .7rem; }
  
     .flower-card__name {
       font-family:'Cormorant Garamond', serif;
       font-size:1rem; line-height:1.2;
     }
  
-    .flower-card__price {
-      font-size:.65rem; color:var(--moss);
-      margin-top:.15rem;
-    }
+    .flower-card__price { font-size:.65rem; color:var(--moss); margin-top:.15rem; }
  
     .flower-card__season {
       font-size:.58rem; letter-spacing:.12em; text-transform:uppercase;
       color:rgba(44,37,32,.35); margin-top:.1rem;
     }
  
-    /* Qty overlay */
     .flower-qty-overlay {
       position:absolute; top:6px; right:6px;
       display:flex; align-items:center; gap:.3rem;
@@ -349,42 +398,28 @@
     .qty-btn {
       width:22px; height:22px; border-radius:50%;
       border:none; cursor:pointer; font-size:.85rem; font-weight:300;
-      display:none; align-items:center; justify-content:center;
-      transition:all .2s;
+      display:none; align-items:center; justify-content:center; transition:all .2s;
     }
  
-    .qty-btn.minus {
-      background:rgba(44,37,32,.12); color:var(--ink);
-    }
- 
-    .qty-btn.plus {
-      background:var(--moss); color:white;
-    }
+    .qty-btn.minus { background:rgba(44,37,32,.12); color:var(--ink); }
+    .qty-btn.plus  { background:var(--moss); color:white; }
  
     .flower-card.selected .qty-btn { display:flex; }
     .qty-btn:hover { opacity:.8; }
  
-    /* ── PANNELLO DESTRA: Bouquet ── */
-    .bouquet-panel {
-      display:flex; flex-direction:column; gap:1.5rem;
-    }
+    /* ── PANNELLO DESTRA ── */
+    .bouquet-panel { display:flex; flex-direction:column; gap:1.5rem; }
  
-    /* Anteprima visiva */
     .bouquet-preview {
-      background:white;
-      border:1px solid rgba(184,155,106,.18);
-      padding:1.6rem;
+      background:white; border:1px solid rgba(184,155,106,.18); padding:1.6rem;
     }
  
     .bouquet-preview__title {
-      font-family:'Cormorant Garamond', serif;
-      font-size:1.4rem; margin-bottom:1rem;
+      font-family:'Cormorant Garamond', serif; font-size:1.4rem; margin-bottom:1rem;
     }
  
-    /* Cerchio bouquet */
     .bouquet-circle {
-      position:relative;
-      width:200px; height:200px; margin:0 auto 1rem;
+      position:relative; width:200px; height:200px; margin:0 auto 1rem;
     }
  
     .bouquet-base {
@@ -402,11 +437,8 @@
     }
  
     .bouquet-flower-dot {
-      position:absolute;
-      border-radius:50%;
-      overflow:hidden;
-      border:2px solid white;
-      box-shadow:0 2px 8px rgba(44,37,32,.15);
+      position:absolute; border-radius:50%; overflow:hidden;
+      border:2px solid white; box-shadow:0 2px 8px rgba(44,37,32,.15);
       transition:all .4s cubic-bezier(.22,1,.36,1);
       animation:popIn .35s cubic-bezier(.22,1,.36,1) both;
     }
@@ -416,10 +448,7 @@
       to   { transform:scale(1) translate(var(--tx),var(--ty)); opacity:1; }
     }
  
-    /* Composizione info */
-    .bouquet-name-wrap {
-      margin-top:.8rem;
-    }
+    .bouquet-name-wrap { margin-top:.8rem; }
  
     .bouquet-name-wrap label {
       font-size:.62rem; letter-spacing:.2em; text-transform:uppercase;
@@ -427,8 +456,7 @@
     }
  
     .bouquet-name-input {
-      width:100%;
-      border:none; border-bottom:1px solid rgba(184,155,106,.4);
+      width:100%; border:none; border-bottom:1px solid rgba(184,155,106,.4);
       background:transparent; padding:.4rem 0;
       font-family:'Cormorant Garamond', serif;
       font-size:1.2rem; font-style:italic; color:var(--ink);
@@ -438,30 +466,23 @@
     .bouquet-name-input:focus { border-bottom-color:var(--blush); }
     .bouquet-name-input::placeholder { color:rgba(44,37,32,.25); }
  
-    /* Occasione */
     .occasion-grid {
-      display:grid; grid-template-columns:1fr 1fr; gap:.5rem;
-      margin-top:.8rem;
+      display:grid; grid-template-columns:1fr 1fr; gap:.5rem; margin-top:.8rem;
     }
  
     .occasion-chip {
-      border:1px solid rgba(184,155,106,.25);
-      background:transparent; padding:.5rem .6rem;
-      font-family:'Jost', sans-serif; font-size:.65rem;
+      border:1px solid rgba(184,155,106,.25); background:transparent;
+      padding:.5rem .6rem; font-family:'Jost', sans-serif; font-size:.65rem;
       letter-spacing:.12em; text-transform:uppercase;
-      cursor:pointer; transition:all .25s; color:rgba(44,37,32,.5);
-      text-align:center;
+      cursor:pointer; transition:all .25s; color:rgba(44,37,32,.5); text-align:center;
     }
  
     .occasion-chip:hover { border-color:var(--sage); color:var(--sage); }
     .occasion-chip.active { border-color:var(--moss); background:var(--moss); color:white; }
  
-    /* Composizione lista */
     .bouquet-list-panel {
-      background:white;
-      border:1px solid rgba(184,155,106,.18);
-      padding:1.4rem 1.6rem;
-      flex:1;
+      background:white; border:1px solid rgba(184,155,106,.18);
+      padding:1.4rem 1.6rem; flex:1;
     }
  
     .bouquet-list-title {
@@ -486,8 +507,7 @@
     .bouquet-list::-webkit-scrollbar-thumb { background:rgba(184,155,106,.3); }
  
     .bouquet-list-empty {
-      font-size:.78rem; color:rgba(44,37,32,.3);
-      font-style:italic; padding:.5rem 0;
+      font-size:.78rem; color:rgba(44,37,32,.3); font-style:italic; padding:.5rem 0;
     }
  
     .bouquet-list-item {
@@ -510,15 +530,9 @@
  
     .bl-thumb img { width:100%; height:100%; object-fit:cover; }
  
-    .bl-name {
-      font-family:'Cormorant Garamond', serif;
-      font-size:.95rem; flex:1;
-    }
+    .bl-name { font-family:'Cormorant Garamond', serif; font-size:.95rem; flex:1; }
  
-    .bl-qty {
-      font-size:.7rem; letter-spacing:.1em;
-      color:var(--blush); font-weight:500;
-    }
+    .bl-qty { font-size:.7rem; letter-spacing:.1em; color:var(--blush); font-weight:500; }
  
     .bl-remove {
       font-size:.7rem; color:rgba(44,37,32,.25);
@@ -527,7 +541,6 @@
  
     .bl-remove:hover { color:var(--blush); }
  
-    /* Totale */
     .bouquet-total {
       padding-top:1rem; margin-top:.5rem;
       border-top:1px solid rgba(184,155,106,.15);
@@ -544,11 +557,8 @@
       font-size:1.4rem; color:var(--moss); font-style:italic;
     }
  
-    /* ── NOTE PANEL ── */
     .note-panel {
-      background:white;
-      border:1px solid rgba(184,155,106,.18);
-      padding:1.4rem 1.6rem;
+      background:white; border:1px solid rgba(184,155,106,.18); padding:1.4rem 1.6rem;
     }
  
     .note-panel label {
@@ -558,31 +568,25 @@
  
     .note-panel textarea {
       width:100%; height:80px; resize:none;
-      border:1px solid rgba(184,155,106,.25);
-      background:var(--cream); padding:.7rem .9rem;
-      font-family:'Jost', sans-serif; font-size:.8rem;
-      color:var(--ink); outline:none; transition:border .3s;
-      line-height:1.6;
+      border:1px solid rgba(184,155,106,.25); background:var(--cream);
+      padding:.7rem .9rem; font-family:'Jost', sans-serif; font-size:.8rem;
+      color:var(--ink); outline:none; transition:border .3s; line-height:1.6;
     }
  
     .note-panel textarea:focus { border-color:var(--blush); }
     .note-panel textarea::placeholder { color:rgba(44,37,32,.25); }
  
-    /* ── CTA ── */
     .cta-btn {
       width:100%; padding:1rem;
-      background:var(--moss); color:white;
-      border:none; cursor:pointer;
+      background:var(--moss); color:white; border:none; cursor:pointer;
       font-family:'Jost', sans-serif;
       font-size:.72rem; letter-spacing:.25em; text-transform:uppercase;
       transition:all .3s; position:relative; overflow:hidden;
     }
  
     .cta-btn::after {
-      content:'';
-      position:absolute; inset:0;
-      background:rgba(255,255,255,.08);
-      opacity:0; transition:opacity .3s;
+      content:''; position:absolute; inset:0;
+      background:rgba(255,255,255,.08); opacity:0; transition:opacity .3s;
     }
  
     .cta-btn:hover::after { opacity:1; }
@@ -594,11 +598,10 @@
  
     .cta-btn:disabled::after { display:none; }
  
-    /* ── MODAL CONFERMA ── */
+    /* ── MODAL ── */
     .modal-overlay {
       position:fixed; inset:0; z-index:500;
-      background:rgba(44,37,32,.5);
-      backdrop-filter:blur(6px);
+      background:rgba(44,37,32,.5); backdrop-filter:blur(6px);
       display:flex; align-items:center; justify-content:center;
       opacity:0; pointer-events:none; transition:opacity .35s;
     }
@@ -608,15 +611,12 @@
     .modal {
       background:white; max-width:460px; width:90%;
       padding:2.5rem; position:relative;
-      transform:translateY(20px); transition:transform .35s;
-      text-align:center;
+      transform:translateY(20px); transition:transform .35s; text-align:center;
     }
  
     .modal-overlay.open .modal { transform:translateY(0); }
  
-    .modal-ornament {
-      font-size:2.5rem; margin-bottom:1rem; display:block;
-    }
+    .modal-ornament { font-size:2.5rem; margin-bottom:1rem; display:block; }
  
     .modal h2 {
       font-family:'Cormorant Garamond', serif;
@@ -624,20 +624,16 @@
     }
  
     .modal p {
-      font-size:.82rem; color:rgba(44,37,32,.55); line-height:1.7;
-      margin-bottom:1.5rem;
+      font-size:.82rem; color:rgba(44,37,32,.55); line-height:1.7; margin-bottom:1.5rem;
     }
  
     .modal-summary {
       background:var(--cream); padding:1rem 1.2rem;
-      border:1px solid rgba(184,155,106,.2);
-      margin-bottom:1.5rem; text-align:left;
-      font-size:.8rem; line-height:1.8;
+      border:1px solid rgba(184,155,106,.2); margin-bottom:1.5rem;
+      text-align:left; font-size:.8rem; line-height:1.8;
     }
  
-    .modal-summary strong {
-      font-family:'Cormorant Garamond', serif; font-size:1rem;
-    }
+    .modal-summary strong { font-family:'Cormorant Garamond', serif; font-size:1rem; }
  
     .modal-actions { display:flex; gap:.8rem; }
  
@@ -663,27 +659,24 @@
  
     .modal-close {
       position:absolute; top:1rem; right:1.2rem;
-      font-size:1rem; cursor:pointer; color:rgba(44,37,32,.3);
-      transition:color .2s;
+      font-size:1rem; cursor:pointer; color:rgba(44,37,32,.3); transition:color .2s;
     }
  
     .modal-close:hover { color:var(--blush); }
  
     /* ── Toast ── */
     .toast {
-      position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(80px);
+      position:fixed; bottom:2rem; left:50%;
+      transform:translateX(-50%) translateY(80px);
       background:var(--moss); color:white; padding:.8rem 2rem;
       font-size:.72rem; letter-spacing:.18em; text-transform:uppercase;
-      z-index:600; transition:transform .4s cubic-bezier(.22,1,.36,1);
-      pointer-events:none;
+      z-index:600; transition:transform .4s cubic-bezier(.22,1,.36,1); pointer-events:none;
     }
  
     .toast.show { transform:translateX(-50%) translateY(0); }
  
-    /* Staggered section animation */
-    .section-animate {
-      animation:fadeUp .6s ease both;
-    }
+    /* Animations */
+    .section-animate { animation:fadeUp .6s ease both; }
  
     @keyframes fadeUp {
       from { opacity:0; transform:translateY(20px); }
@@ -692,34 +685,64 @@
  
     .section-animate:nth-child(2) { animation-delay:.1s; }
     .section-animate:nth-child(3) { animation-delay:.2s; }
+ 
+    /* Footer */
+    .footer-strip {
+      text-align:center; padding:2rem;
+      border-top:1px solid rgba(184,155,106,.18);
+      font-size:.65rem; letter-spacing:.18em; text-transform:uppercase;
+      color:rgba(44,37,32,.3);
+    }
   </style>
 </head>
 <body>
  
-<!-- ═══════════ NAVBAR ═══════════ -->
+<!-- ════════════════════════════════
+     NAVBAR
+════════════════════════════════ -->
 <nav class="navbar">
   <a class="navbar__logo" href="index.html">
-    <span class="logo-ornament">✿</span> Fioraio
+    <span class="logo-ornament">✿</span>
+    <span class="navbar__logo-text">
+      Fioraio
+      <span class="logo-sub">Florist · Artigiano</span>
+    </span>
   </a>
+ 
+  <ul class="navbar__center">
+    <li><a href="composizione.html" class="active">Composizioni</a></li>
+    <li><a href="piante.html">Piante</a></li>
+  </ul>
+ 
+  <div class="navbar__actions">
+    <a href="tel:0522576309">Contattaci</a>
+    <div class="navbar__actions-divider"></div>
+    <a href="https://maps.app.goo.gl/P2EiUiBZ4B3QrrhD7?g_st=ic" target="_blank">Trovaci</a>
+    <div class="navbar__actions-divider"></div>
+    <div class="cart-pill" id="cartTrigger" role="button" aria-label="Carrello">
+      <span>🛒</span>
+      <span class="cart-count" id="cartCount">0</span>
+    </div>
+  </div>
  
   <button class="navbar__burger" id="burger" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
- 
-  <ul class="navbar__links" id="navLinks">
-    <li><a href="composizione.html" class="active">Composizioni</a></li>
-    <li><a href="piante.html">Piante</a></li>
-    <li><a href="tel:0522576309">Contattaci</a></li>
-    <li><a href="https://maps.app.goo.gl target="_blank">Trovaci su Maps</a></li>
-  </ul>
- 
-  <div class="cart-pill" id="cartTrigger">
-    <span>🛒</span>
-    <span class="cart-count" id="cartCount">0</span>
-  </div>
 </nav>
  
-<!-- ═══════════ HERO ═══════════ -->
+<!-- Mobile overlay -->
+<div class="navbar__mobile-overlay" id="mobileOverlay"></div>
+<div class="navbar__mobile-panel" id="mobilePanel">
+  <span class="mobile-label">Menu</span>
+  <a href="composizione.html" class="active">Composizioni</a>
+  <a href="piante.html">Piante</a>
+  <a href="tel:0522576309">Contattaci</a>
+  <a href="https://maps.app.goo.gl/P2EiUiBZ4B3QrrhD7?g_st=ic" target="_blank">Trovaci su Maps</a>
+</div>
+ 
+<!-- ════════════════════════════════
+     HERO
+════════════════════════════════ -->
 <header class="page-hero">
   <div class="hero-ornament">Bouquet</div>
   <div class="hero-content">
@@ -729,7 +752,9 @@
   </div>
 </header>
  
-<!-- ═══════════ PROGRESS STEPS ═══════════ -->
+<!-- ════════════════════════════════
+     PROGRESS STEPS
+════════════════════════════════ -->
 <div class="steps-bar" id="stepsBar">
   <div class="step-item active" data-step="1">
     <div class="step-circle">1</div>
@@ -747,7 +772,9 @@
   </div>
 </div>
  
-<!-- ═══════════ COMPOSER ═══════════ -->
+<!-- ════════════════════════════════
+     COMPOSER
+════════════════════════════════ -->
 <div class="composer">
  
   <!-- ── SINISTRA: selezione fiori ── -->
@@ -774,15 +801,12 @@
       </div>
     </div>
  
-    <div class="flowers-grid" id="flowersGrid">
-      <!-- Populated by JS -->
-    </div>
+    <div class="flowers-grid" id="flowersGrid"></div>
   </div>
  
   <!-- ── DESTRA: bouquet builder ── -->
   <div class="bouquet-panel">
  
-    <!-- Preview visiva -->
     <div class="bouquet-preview section-animate">
       <div class="panel__header" style="padding:0 0 1rem; border-bottom:1px solid rgba(184,155,106,.1);">
         <h2 class="panel__title" style="font-size:1.3rem;">Anteprima</h2>
@@ -813,7 +837,6 @@
       </div>
     </div>
  
-    <!-- Lista composizione -->
     <div class="bouquet-list-panel section-animate">
       <div class="bouquet-list-title">
         <span>Composizione</span>
@@ -830,13 +853,11 @@
       </div>
     </div>
  
-    <!-- Note -->
     <div class="note-panel section-animate">
       <label for="noteText">Note per il fioraio</label>
       <textarea id="noteText" placeholder="es. preferisco colori caldi, altezza degli steli media, carta kraft…"></textarea>
     </div>
  
-    <!-- CTA -->
     <button class="cta-btn" id="orderBtn" disabled>
       Richiedi questo bouquet
     </button>
@@ -844,7 +865,9 @@
   </div>
 </div>
  
-<!-- ═══════════ MODAL ═══════════ -->
+<!-- ════════════════════════════════
+     MODAL
+════════════════════════════════ -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <span class="modal-close" id="modalClose">✕</span>
@@ -854,118 +877,47 @@
     <div class="modal-summary" id="modalSummary"></div>
     <div class="modal-actions">
       <button class="btn-secondary" id="modalEdit">Modifica</button>
-      <a id="modalWhatsapp" href="#" target="_blank">
+      <a id="modalWhatsapp" href="#" target="_blank" style="flex:2; display:block;">
         <button class="btn-primary" style="width:100%;">📱 Invia su WhatsApp</button>
       </a>
     </div>
   </div>
 </div>
  
-<!-- ═══════════ TOAST ═══════════ -->
+<!-- ════════════════════════════════
+     TOAST
+════════════════════════════════ -->
 <div class="toast" id="toast"></div>
+ 
+<!-- ════════════════════════════════
+     FOOTER
+════════════════════════════════ -->
+<footer class="footer-strip">
+  ✿ Fioraio &nbsp;·&nbsp; Nonantola &nbsp;·&nbsp; Tel. 0522 576309
+</footer>
  
 <script>
 /* ══════════════════════════════════════
-   DATI FIORI (sincronizzati con piante.html)
+   DATI FIORI
 ══════════════════════════════════════ */
 const FLOWERS = [
-  {
-    id: 'rosa',
-    name: 'Rosa Classica',
-    price: 2.50,
-    unit: 'stelo',
-    season: 'tutti',
-    img: 'https://i.pinimg.com/736x/ab/36/15/ab361543065a38d15bb887ab3094628a.jpg',
-    color: '#c9877a'
-  },
-  {
-    id: 'orchidea',
-    name: 'Orchidea Phalaenopsis',
-    price: 18.00,
-    unit: 'pianta',
-    season: 'tutti',
-    img: 'https://i.pinimg.com/1200x/21/2d/33/212d338f8eabc92e4aa901f73f94cc93.jpg',
-    color: '#9b7db8'
-  },
-  {
-    id: 'tulipano',
-    name: 'Tulipano',
-    price: 1.80,
-    unit: 'stelo',
-    season: 'primavera',
-    img: 'https://i.pinimg.com/1200x/df/0a/80/df0a805789d7dfa7b2e01e4d4ea2a4b6.jpg',
-    color: '#e87070'
-  },
-  {
-    id: 'mimosa',
-    name: 'Mimosa',
-    price: 6.00,
-    unit: 'mazzo',
-    season: 'primavera',
-    img: 'https://i.pinimg.com/736x/d3/fa/13/d3fa134c83fd1416594c301ec21232ed.jpg',
-    color: '#e8c84a'
-  },
-  {
-    id: 'girasole',
-    name: 'Girasole',
-    price: 2.00,
-    unit: 'stelo',
-    season: 'estate',
-    img: 'https://i.pinimg.com/1200x/7e/51/78/7e517879702025ab52fbd431f15db869.jpg',
-    color: '#e8b84a'
-  },
-  {
-    id: 'lavanda',
-    name: 'Lavanda',
-    price: 4.50,
-    unit: 'fascio',
-    season: 'estate',
-    img: 'https://i.pinimg.com/1200x/f8/12/5e/f8125e0112c83d67cf31edf8b3da432c.jpg',
-    color: '#9b87d4'
-  },
-  {
-    id: 'crisantemo',
-    name: 'Crisantemo',
-    price: 3.50,
-    unit: 'pianta',
-    season: 'autunno',
-    img: 'https://i.pinimg.com/1200x/e5/21/50/e52150bf90a9e2af7c21cae723145866.jpg',
-    color: '#e89b5a'
-  },
-  {
-    id: 'dalia',
-    name: 'Dalia Autunnale',
-    price: 3.00,
-    unit: 'stelo',
-    season: 'autunno',
-    img: 'https://i.pinimg.com/1200x/28/9e/06/289e0683f4cffe6a5a4d0cdb477ba17d.jpg',
-    color: '#c87a4a'
-  },
-  {
-    id: 'stella',
-    name: 'Stella di Natale',
-    price: 8.00,
-    unit: 'pianta',
-    season: 'inverno',
-    img: 'https://i.pinimg.com/1200x/52/e1/b0/52e1b05a8b62c8fa51baef7a5af013ae.jpg',
-    color: '#c84a4a'
-  },
-  {
-    id: 'elleboro',
-    name: 'Elleboro',
-    price: 5.00,
-    unit: 'stelo',
-    season: 'inverno',
-    img: 'https://i.pinimg.com/1200x/d3/4a/e7/d34ae77f9f8aadf138da4791a8a0aed6.jpg',
-    color: '#7a8c6e'
-  },
+  { id:'rosa',     name:'Rosa Classica',         price:2.50,  unit:'stelo',  season:'tutti',     img:'https://i.pinimg.com/736x/ab/36/15/ab361543065a38d15bb887ab3094628a.jpg',  color:'#c9877a' },
+  { id:'orchidea', name:'Orchidea Phalaenopsis',  price:18.00, unit:'pianta', season:'tutti',     img:'https://i.pinimg.com/1200x/21/2d/33/212d338f8eabc92e4aa901f73f94cc93.jpg', color:'#9b7db8' },
+  { id:'tulipano', name:'Tulipano',               price:1.80,  unit:'stelo',  season:'primavera', img:'https://i.pinimg.com/1200x/df/0a/80/df0a805789d7dfa7b2e01e4d4ea2a4b6.jpg', color:'#e87070' },
+  { id:'mimosa',   name:'Mimosa',                 price:6.00,  unit:'mazzo',  season:'primavera', img:'https://i.pinimg.com/736x/d3/fa/13/d3fa134c83fd1416594c301ec21232ed.jpg',  color:'#e8c84a' },
+  { id:'girasole', name:'Girasole',               price:2.00,  unit:'stelo',  season:'estate',    img:'https://i.pinimg.com/1200x/7e/51/78/7e517879702025ab52fbd431f15db869.jpg', color:'#e8b84a' },
+  { id:'lavanda',  name:'Lavanda',                price:4.50,  unit:'fascio', season:'estate',    img:'https://i.pinimg.com/1200x/f8/12/5e/f8125e0112c83d67cf31edf8b3da432c.jpg', color:'#9b87d4' },
+  { id:'crisantemo', name:'Crisantemo',           price:3.50,  unit:'pianta', season:'autunno',   img:'https://i.pinimg.com/1200x/e5/21/50/e52150bf90a9e2af7c21cae723145866.jpg', color:'#e89b5a' },
+  { id:'dalia',    name:'Dalia Autunnale',         price:3.00,  unit:'stelo',  season:'autunno',   img:'https://i.pinimg.com/1200x/28/9e/06/289e0683f4cffe6a5a4d0cdb477ba17d.jpg', color:'#c87a4a' },
+  { id:'stella',   name:'Stella di Natale',        price:8.00,  unit:'pianta', season:'inverno',   img:'https://i.pinimg.com/1200x/52/e1/b0/52e1b05a8b62c8fa51baef7a5af013ae.jpg', color:'#c84a4a' },
+  { id:'elleboro', name:'Elleboro',               price:5.00,  unit:'stelo',  season:'inverno',   img:'https://i.pinimg.com/1200x/d3/4a/e7/d34ae77f9f8aadf138da4791a8a0aed6.jpg', color:'#7a8c6e' },
 ];
  
 /* ══════════════════════════════════════
    STATE
 ══════════════════════════════════════ */
-let bouquet   = {}; // { flowerID: qty }
-let occasion  = '';
+let bouquet  = {};
+let occasion = '';
  
 const grid       = document.getElementById('flowersGrid');
 const bouqList   = document.getElementById('bouquetList');
@@ -994,7 +946,6 @@ function renderFlowers(filter = 'tutti', search = '') {
       const card = document.createElement('div');
       card.className = 'flower-card' + (sel ? ' selected' : '');
       card.dataset.id = f.id;
-      card.style.animationDelay = (i * 0.04) + 's';
       card.style.animation = `popIn .35s cubic-bezier(.22,1,.36,1) ${i*0.04}s both`;
  
       card.innerHTML = `
@@ -1013,22 +964,17 @@ function renderFlowers(filter = 'tutti', search = '') {
         </div>
       `;
  
-      // Click on card = add 1
       card.addEventListener('click', e => {
         if (e.target.closest('.qty-btn')) return;
         addFlower(f.id);
       });
  
-      // Plus
       card.querySelector('.qty-btn.plus').addEventListener('click', e => {
-        e.stopPropagation();
-        addFlower(f.id);
+        e.stopPropagation(); addFlower(f.id);
       });
  
-      // Minus
       card.querySelector('.qty-btn.minus').addEventListener('click', e => {
-        e.stopPropagation();
-        removeFlower(f.id);
+        e.stopPropagation(); removeFlower(f.id);
       });
  
       grid.appendChild(card);
@@ -1036,7 +982,7 @@ function renderFlowers(filter = 'tutti', search = '') {
 }
  
 function seasonLabel(s) {
-  const m = { tutti:'Tutto l\'anno', primavera:'Primavera', estate:'Estate', autunno:'Autunno', inverno:'Inverno' };
+  const m = { tutti:"Tutto l'anno", primavera:'Primavera', estate:'Estate', autunno:'Autunno', inverno:'Inverno' };
   return m[s] || s;
 }
  
@@ -1056,16 +1002,13 @@ function removeFlower(id) {
  
 /* ── Update all UI ── */
 function update() {
-  // Refresh cards in place (only badges/classes)
   grid.querySelectorAll('.flower-card').forEach(card => {
     const id  = card.dataset.id;
     const qty = bouquet[id] || 0;
-    const sel = qty > 0;
-    card.classList.toggle('selected', sel);
+    card.classList.toggle('selected', qty > 0);
     card.querySelector('.qty-badge').textContent = qty;
   });
  
-  // Bouquet list
   const ids = Object.keys(bouquet);
   selCount.textContent = ids.length + (ids.length === 1 ? ' selezionato' : ' selezionati');
  
@@ -1081,15 +1024,13 @@ function update() {
   }
  
   listEmpty.style.display = 'none';
- 
-  // Rebuild list
   bouqList.innerHTML = '';
   let total = 0;
  
   ids.forEach(id => {
-    const f    = FLOWERS.find(x => x.id === id);
-    const qty  = bouquet[id];
-    const sub  = f.price * qty;
+    const f   = FLOWERS.find(x => x.id === id);
+    const qty = bouquet[id];
+    const sub = f.price * qty;
     total += sub;
  
     const item = document.createElement('div');
@@ -1102,8 +1043,7 @@ function update() {
     `;
  
     item.querySelector('.bl-remove').addEventListener('click', () => {
-      delete bouquet[id];
-      update();
+      delete bouquet[id]; update();
     });
  
     bouqList.appendChild(item);
@@ -1112,7 +1052,7 @@ function update() {
   totalEl.textContent = '€ ' + total.toFixed(2).replace('.', ',');
   orderBtn.disabled = false;
   renderBouquetCircle();
-  updateSteps(ids.length > 0 ? 2 : 1);
+  updateSteps(2);
 }
  
 /* ── Visual circle ── */
@@ -1125,7 +1065,6 @@ function renderBouquetCircle() {
     return;
   }
  
-  // Place flowers in a rough circle layout
   const positions = computePositions(ids.length);
   ids.forEach((id, i) => {
     const f   = FLOWERS.find(x => x.id === id);
@@ -1137,16 +1076,13 @@ function renderBouquetCircle() {
     dot.className = 'bouquet-flower-dot';
     dot.style.cssText = `
       width:${size}px; height:${size}px;
-      left:${pos.x}%;
-      top:${pos.y}%;
-      --tx:${-size/2}px;
-      --ty:${-size/2}px;
-      transform:translate(${-size/2}px, ${-size/2}px);
+      left:${pos.x}%; top:${pos.y}%;
+      --tx:${-size/2}px; --ty:${-size/2}px;
+      transform:translate(${-size/2}px,${-size/2}px);
       border-color:${f.color};
     `;
     dot.innerHTML = `<img src="${f.img}" alt="${f.name}" style="width:100%;height:100%;object-fit:cover;">`;
  
-    // If qty > 1, show small counter
     if (qty > 1) {
       const badge = document.createElement('div');
       badge.style.cssText = `
@@ -1167,14 +1103,12 @@ function renderBouquetCircle() {
  
 function computePositions(n) {
   if (n === 1) return [{ x:50, y:50 }];
- 
   const positions = [];
   const rings = [
     { r:0,  count:1 },
     { r:28, count:6 },
     { r:42, count:10 }
   ];
- 
   let placed = 0;
   for (const ring of rings) {
     if (placed >= n) break;
@@ -1206,9 +1140,7 @@ document.querySelectorAll('.tag-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    // Map the display text to actual season value
-    const rawTag = btn.dataset.tag;
-    currentTag = rawTag;
+    currentTag = btn.dataset.tag;
     renderFlowers(currentTag, document.getElementById('searchInput').value);
   });
 });
@@ -1239,17 +1171,16 @@ document.getElementById('clearBouquet').addEventListener('click', () => {
 });
  
 /* ── Order modal ── */
-const modal       = document.getElementById('modal');
-const modalClose  = document.getElementById('modalClose');
-const modalEdit   = document.getElementById('modalEdit');
-const modalSummary = document.getElementById('modalSummary');
+const modal         = document.getElementById('modal');
+const modalClose    = document.getElementById('modalClose');
+const modalEdit     = document.getElementById('modalEdit');
+const modalSummary  = document.getElementById('modalSummary');
 const modalWhatsapp = document.getElementById('modalWhatsapp');
  
 orderBtn.addEventListener('click', () => {
   const name = document.getElementById('bouquetName').value.trim() || 'Bouquet personalizzato';
   const note = document.getElementById('noteText').value.trim();
  
-  // Build summary
   let lines = `<strong>${name}</strong><br>`;
   if (occasion) lines += `Occasione: ${occasion}<br>`;
   lines += '<br>';
@@ -1268,7 +1199,6 @@ orderBtn.addEventListener('click', () => {
  
   modalSummary.innerHTML = lines;
  
-  // WhatsApp link
   const waText = buildWAText(name, note, total);
   modalWhatsapp.href = `https://wa.me/390522576309?text=${encodeURIComponent(waText)}`;
  
@@ -1277,7 +1207,7 @@ orderBtn.addEventListener('click', () => {
 });
  
 function buildWAText(name, note, total) {
-  let txt = `Ciao! Vorrei ordinare un bouquet personalizzato da La Bottega del Fiore.\n\n`;
+  let txt = `Ciao! Vorrei ordinare un bouquet personalizzato da Fioraio.\n\n`;
   txt += `*${name}*\n`;
   if (occasion) txt += `Occasione: ${occasion}\n`;
   txt += '\n';
@@ -1304,10 +1234,19 @@ function showToast(msg) {
   t._timer = setTimeout(() => t.classList.remove('show'), 1800);
 }
  
-/* ── Burger ── */
-document.getElementById('burger').addEventListener('click', () => {
-  document.getElementById('navLinks').classList.toggle('open');
+/* ── Burger / mobile menu ── */
+const burger        = document.getElementById('burger');
+const mobileOverlay = document.getElementById('mobileOverlay');
+const mobilePanel   = document.getElementById('mobilePanel');
+ 
+function openMobileMenu()  { mobileOverlay.classList.add('open'); mobilePanel.classList.add('open'); }
+function closeMobileMenu() { mobileOverlay.classList.remove('open'); mobilePanel.classList.remove('open'); }
+ 
+burger.addEventListener('click', () => {
+  mobilePanel.classList.contains('open') ? closeMobileMenu() : openMobileMenu();
 });
+ 
+mobileOverlay.addEventListener('click', closeMobileMenu);
  
 /* ── Cart count (sincronizzato con piante.html) ── */
 const cart = JSON.parse(localStorage.getItem('lbdf_cart') || '[]');
