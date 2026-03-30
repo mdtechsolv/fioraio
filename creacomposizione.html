@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/davideiacuzio005-source/La-botttega-del-fiore/main/favicon-32x32.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crea il tuo Bouquet — Fioraio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+ 
+  <style>
+    :root {
+      --cream: #f7f2eb;
+      --petal: #e8d5c4;
+      --sage:  #7a8c6e;
+      --moss:  #4a5e3a;
+      --blush: #c9877a;
+      --ink:   #2c2520;
+      --gold:  #b89b6a;
+      --nav-h: 72px;
+    }
+ 
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+ 
+    body {
+      font-family:'Jost', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+ 
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 15% 25%, rgba(184,155,106,.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 75%, rgba(122,140,110,.06) 0%, transparent 55%);
+      pointer-events:none; z-index:0;
+    }
+ 
+    /* ── NAVBAR ── */
+    .navbar {
+      position:fixed; inset:0 0 auto 0;
+      z-index:200; height:var(--nav-h);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 3rem;
+      background:rgba(247,242,235,.88);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(184,155,106,.18);
+    }
+ 
+    .navbar__logo {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.35rem; font-weight:400; letter-spacing:.1em;
+      color:var(--ink); text-decoration:none;
+    }
+ 
+    .navbar__logo .logo-ornament { color:var(--blush); }
+ 
+    .navbar__links {
+      display:flex; gap:2rem; list-style:none; align-items:center;
+    }
+ 
+    .navbar__links a {
+      font-size:.68rem; letter-spacing:.2em; text-transform:uppercase;
+      color:var(--ink); text-decoration:none; position:relative; padding-bottom:3px;
+      transition:color .3s;
+    }
+ 
+    .navbar__links a::after {
+      content:''; position:absolute; bottom:0; left:0;
+      width:0; height:1px; background:var(--blush); transition:width .35s ease;
+    }
+ 
+    .navbar__links a:hover, .navbar__links a.active { color:var(--blush); }
+    .navbar__links a:hover::after, .navbar__links a.active::after { width:100%; }
+ 
+    .cart-pill {
+      display:flex; align-items:center; gap:.5rem; cursor:pointer;
+      padding:.45rem 1rem; border:1px solid rgba(74,94,58,.25); border-radius:50px;
+      font-size:.72rem; letter-spacing:.12em; text-transform:uppercase;
+      transition:all .3s; background:transparent;
+    }
+ 
+    .cart-pill:hover { border-color:var(--blush); background:rgba(201,135,122,.06); }
+ 
+    .cart-pill .cart-count {
+      background:var(--moss); color:white; font-size:.6rem;
+      width:18px; height:18px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+    }
+ 
+    .navbar__burger {
+      display:none; flex-direction:column; gap:5px;
+      cursor:pointer; background:none; border:none; padding:.3rem;
+    }
+ 
+    .navbar__burger span { display:block; width:22px; height:1px; background:var(--ink); }
+ 
+    @media(max-width:768px) {
+      .navbar { padding:0 1.5rem; }
+      .navbar__burger { display:flex; }
+      .navbar__links {
+        position:fixed; inset:var(--nav-h) 0 0 0;
+        background:rgba(247,242,235,.97);
+        flex-direction:column; justify-content:center; gap:2rem;
+        transform:translateX(100%); transition:transform .4s cubic-bezier(.22,1,.36,1);
+      }
+      .navbar__links.open { transform:translateX(0); }
+    }
+ 
+    /* ── HERO ── */
+    .page-hero {
+      position:relative;
+      padding:calc(var(--nav-h) + 5rem) 2rem 4rem;
+      text-align:center; overflow:hidden;
+    }
+ 
+    .hero-ornament {
+      position:absolute;
+      font-family:'Cormorant Garamond', serif; font-style:italic;
+      color:rgba(184,155,106,.1);
+      font-size:clamp(6rem,18vw,14rem);
+      pointer-events:none; line-height:1;
+      top:50%; left:50%; transform:translate(-50%,-50%);
+      white-space:nowrap; z-index:0;
+    }
+ 
+    .hero-content { position:relative; z-index:1; }
+ 
+    .hero-eyebrow {
+      font-size:.65rem; letter-spacing:.3em; text-transform:uppercase;
+      color:var(--gold); margin-bottom:1rem;
+      display:flex; align-items:center; justify-content:center; gap:.8rem;
+    }
+ 
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content:''; width:40px; height:1px;
+      background:linear-gradient(to right, transparent, var(--gold));
+    }
+ 
+    .hero-eyebrow::after { transform:scaleX(-1); }
+ 
+    .page-hero h1 {
+      font-family:'Cormorant Garamond', serif;
+      font-size:clamp(3rem,6.5vw,6rem); font-weight:300; line-height:1;
+    }
+ 
+    .page-hero h1 em { font-style:italic; color:var(--blush); }
+ 
+    .hero-sub {
+      margin-top:1.2rem; font-size:.78rem; letter-spacing:.2em;
+      text-transform:uppercase; color:rgba(44,37,32,.45);
+    }
+ 
+    /* ── PROGRESS STEPS ── */
+    .steps-bar {
+      display:flex; justify-content:center; align-items:center;
+      gap:0; padding:0 2rem 3rem; position:relative; z-index:1;
+    }
+ 
+    .step-item {
+      display:flex; flex-direction:column; align-items:center; gap:.4rem;
+      flex:1; max-width:180px;
+    }
+ 
+    .step-circle {
+      width:36px; height:36px; border-radius:50%;
+      border:1px solid rgba(184,155,106,.3);
+      display:flex; align-items:center; justify-content:center;
+      font-size:.65rem; letter-spacing:.1em;
+      color:rgba(44,37,32,.35);
+      transition:all .4s;
+      background:var(--cream);
+    }
+ 
+    .step-item.active .step-circle {
+      border-color:var(--blush); color:var(--blush);
+      box-shadow:0 0 0 4px rgba(201,135,122,.12);
+    }
+ 
+    .step-item.done .step-circle {
+      border-color:var(--moss); background:var(--moss); color:white;
+    }
+ 
+    .step-label {
+      font-size:.6rem; letter-spacing:.2em; text-transform:uppercase;
+      color:rgba(44,37,32,.35); text-align:center; transition:color .3s;
+    }
+ 
+    .step-item.active .step-label { color:var(--blush); }
+    .step-item.done .step-label { color:var(--moss); }
+ 
+    .step-line {
+      flex:1; max-width:80px; height:1px;
+      background:rgba(184,155,106,.25);
+      margin-bottom:1.4rem;
+    }
+ 
+    /* ── LAYOUT PRINCIPALE ── */
+    .composer {
+      max-width:1200px; margin:0 auto;
+      padding:0 2rem 6rem;
+      display:grid;
+      grid-template-columns:1fr 360px;
+      gap:2.5rem;
+      position:relative; z-index:1;
+    }
+ 
+    @media(max-width:900px) {
+      .composer { grid-template-columns:1fr; }
+    }
+ 
+    /* ── PANNELLO SINISTRA: selezione fiori ── */
+    .panel {
+      background:white;
+      border:1px solid rgba(184,155,106,.18);
+    }
+ 
+    .panel__header {
+      padding:1.5rem 1.8rem 1.2rem;
+      border-bottom:1px solid rgba(184,155,106,.12);
+      display:flex; align-items:baseline; justify-content:space-between;
+    }
+ 
+    .panel__title {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.6rem; font-weight:400;
+    }
+ 
+    .panel__subtitle {
+      font-size:.65rem; letter-spacing:.18em; text-transform:uppercase;
+      color:rgba(44,37,32,.4);
+    }
+ 
+    /* Search + filter bar */
+    .flowers-toolbar {
+      padding:1rem 1.8rem;
+      display:flex; gap:.8rem; flex-wrap:wrap;
+      border-bottom:1px solid rgba(184,155,106,.1);
+    }
+ 
+    .search-wrap {
+      flex:1; min-width:160px; position:relative;
+    }
+ 
+    .search-wrap input {
+      width:100%; padding:.55rem 1rem .55rem 2.2rem;
+      border:1px solid rgba(184,155,106,.25);
+      background:var(--cream); font-family:'Jost', sans-serif;
+      font-size:.78rem; color:var(--ink); outline:none;
+      transition:border .3s;
+    }
+ 
+    .search-wrap input:focus { border-color:var(--blush); }
+ 
+    .search-wrap .search-icon {
+      position:absolute; left:.7rem; top:50%; transform:translateY(-50%);
+      font-size:.75rem; color:rgba(44,37,32,.35); pointer-events:none;
+    }
+ 
+    .tag-filters {
+      display:flex; gap:.4rem; flex-wrap:wrap; align-items:center;
+    }
+ 
+    .tag-btn {
+      border:1px solid rgba(184,155,106,.25); background:transparent;
+      font-family:'Jost', sans-serif; font-size:.6rem;
+      letter-spacing:.15em; text-transform:uppercase;
+      padding:.4rem .8rem; cursor:pointer; transition:all .25s;
+      color:rgba(44,37,32,.5);
+    }
+ 
+    .tag-btn:hover, .tag-btn.active {
+      border-color:var(--blush); color:var(--blush);
+    }
+ 
+    /* Fiori grid */
+    .flowers-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
+      gap:1rem;
+      padding:1.4rem 1.8rem;
+      max-height:480px;
+      overflow-y:auto;
+    }
+ 
+    .flowers-grid::-webkit-scrollbar { width:4px; }
+    .flowers-grid::-webkit-scrollbar-track { background:transparent; }
+    .flowers-grid::-webkit-scrollbar-thumb { background:rgba(184,155,106,.3); border-radius:2px; }
+ 
+    .flower-card {
+      position:relative; cursor:pointer;
+      border:2px solid transparent;
+      transition:all .3s;
+      background:var(--cream);
+    }
+ 
+    .flower-card:hover { border-color:rgba(201,135,122,.4); }
+ 
+    .flower-card.selected { border-color:var(--blush); }
+ 
+    .flower-card__img {
+      aspect-ratio:1/1; overflow:hidden;
+    }
+ 
+    .flower-card__img img {
+      width:100%; height:100%; object-fit:cover;
+      transition:transform .5s cubic-bezier(.22,1,.36,1);
+    }
+ 
+    .flower-card:hover .flower-card__img img { transform:scale(1.08); }
+ 
+    .flower-card__info {
+      padding:.6rem .7rem;
+    }
+ 
+    .flower-card__name {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1rem; line-height:1.2;
+    }
+ 
+    .flower-card__price {
+      font-size:.65rem; color:var(--moss);
+      margin-top:.15rem;
+    }
+ 
+    .flower-card__season {
+      font-size:.58rem; letter-spacing:.12em; text-transform:uppercase;
+      color:rgba(44,37,32,.35); margin-top:.1rem;
+    }
+ 
+    /* Qty overlay */
+    .flower-qty-overlay {
+      position:absolute; top:6px; right:6px;
+      display:flex; align-items:center; gap:.3rem;
+    }
+ 
+    .qty-badge {
+      background:var(--blush); color:white;
+      font-size:.7rem; font-weight:500;
+      width:22px; height:22px; border-radius:50%;
+      display:none; align-items:center; justify-content:center;
+    }
+ 
+    .flower-card.selected .qty-badge { display:flex; }
+ 
+    .qty-btn {
+      width:22px; height:22px; border-radius:50%;
+      border:none; cursor:pointer; font-size:.85rem; font-weight:300;
+      display:none; align-items:center; justify-content:center;
+      transition:all .2s;
+    }
+ 
+    .qty-btn.minus {
+      background:rgba(44,37,32,.12); color:var(--ink);
+    }
+ 
+    .qty-btn.plus {
+      background:var(--moss); color:white;
+    }
+ 
+    .flower-card.selected .qty-btn { display:flex; }
+    .qty-btn:hover { opacity:.8; }
+ 
+    /* ── PANNELLO DESTRA: Bouquet ── */
+    .bouquet-panel {
+      display:flex; flex-direction:column; gap:1.5rem;
+    }
+ 
+    /* Anteprima visiva */
+    .bouquet-preview {
+      background:white;
+      border:1px solid rgba(184,155,106,.18);
+      padding:1.6rem;
+    }
+ 
+    .bouquet-preview__title {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.4rem; margin-bottom:1rem;
+    }
+ 
+    /* Cerchio bouquet */
+    .bouquet-circle {
+      position:relative;
+      width:200px; height:200px; margin:0 auto 1rem;
+    }
+ 
+    .bouquet-base {
+      width:200px; height:200px; border-radius:50%;
+      border:2px dashed rgba(184,155,106,.3);
+      background:radial-gradient(circle, rgba(247,242,235,1) 60%, rgba(232,213,196,.4) 100%);
+      position:relative; overflow:hidden;
+      display:flex; align-items:center; justify-content:center;
+    }
+ 
+    .bouquet-empty-label {
+      font-family:'Cormorant Garamond', serif;
+      font-style:italic; font-size:.9rem;
+      color:rgba(44,37,32,.25); text-align:center; line-height:1.5;
+    }
+ 
+    .bouquet-flower-dot {
+      position:absolute;
+      border-radius:50%;
+      overflow:hidden;
+      border:2px solid white;
+      box-shadow:0 2px 8px rgba(44,37,32,.15);
+      transition:all .4s cubic-bezier(.22,1,.36,1);
+      animation:popIn .35s cubic-bezier(.22,1,.36,1) both;
+    }
+ 
+    @keyframes popIn {
+      from { transform:scale(0) translate(-50%,-50%); opacity:0; }
+      to   { transform:scale(1) translate(var(--tx),var(--ty)); opacity:1; }
+    }
+ 
+    /* Composizione info */
+    .bouquet-name-wrap {
+      margin-top:.8rem;
+    }
+ 
+    .bouquet-name-wrap label {
+      font-size:.62rem; letter-spacing:.2em; text-transform:uppercase;
+      color:rgba(44,37,32,.4); display:block; margin-bottom:.35rem;
+    }
+ 
+    .bouquet-name-input {
+      width:100%;
+      border:none; border-bottom:1px solid rgba(184,155,106,.4);
+      background:transparent; padding:.4rem 0;
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.2rem; font-style:italic; color:var(--ink);
+      outline:none; transition:border .3s;
+    }
+ 
+    .bouquet-name-input:focus { border-bottom-color:var(--blush); }
+    .bouquet-name-input::placeholder { color:rgba(44,37,32,.25); }
+ 
+    /* Occasione */
+    .occasion-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:.5rem;
+      margin-top:.8rem;
+    }
+ 
+    .occasion-chip {
+      border:1px solid rgba(184,155,106,.25);
+      background:transparent; padding:.5rem .6rem;
+      font-family:'Jost', sans-serif; font-size:.65rem;
+      letter-spacing:.12em; text-transform:uppercase;
+      cursor:pointer; transition:all .25s; color:rgba(44,37,32,.5);
+      text-align:center;
+    }
+ 
+    .occasion-chip:hover { border-color:var(--sage); color:var(--sage); }
+    .occasion-chip.active { border-color:var(--moss); background:var(--moss); color:white; }
+ 
+    /* Composizione lista */
+    .bouquet-list-panel {
+      background:white;
+      border:1px solid rgba(184,155,106,.18);
+      padding:1.4rem 1.6rem;
+      flex:1;
+    }
+ 
+    .bouquet-list-title {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.2rem; margin-bottom:1rem;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+ 
+    .bouquet-list-clear {
+      font-size:.6rem; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(44,37,32,.3); cursor:pointer; transition:color .2s;
+    }
+ 
+    .bouquet-list-clear:hover { color:var(--blush); }
+ 
+    .bouquet-list {
+      display:flex; flex-direction:column; gap:.5rem;
+      max-height:220px; overflow-y:auto;
+    }
+ 
+    .bouquet-list::-webkit-scrollbar { width:3px; }
+    .bouquet-list::-webkit-scrollbar-thumb { background:rgba(184,155,106,.3); }
+ 
+    .bouquet-list-empty {
+      font-size:.78rem; color:rgba(44,37,32,.3);
+      font-style:italic; padding:.5rem 0;
+    }
+ 
+    .bouquet-list-item {
+      display:flex; align-items:center; gap:.7rem;
+      padding:.5rem 0; border-bottom:1px solid rgba(184,155,106,.1);
+      animation:slideIn .25s ease both;
+    }
+ 
+    @keyframes slideIn {
+      from { opacity:0; transform:translateX(-10px); }
+      to   { opacity:1; transform:translateX(0); }
+    }
+ 
+    .bouquet-list-item:last-child { border-bottom:none; }
+ 
+    .bl-thumb {
+      width:36px; height:36px; border-radius:50%; overflow:hidden;
+      flex-shrink:0; border:1px solid rgba(184,155,106,.2);
+    }
+ 
+    .bl-thumb img { width:100%; height:100%; object-fit:cover; }
+ 
+    .bl-name {
+      font-family:'Cormorant Garamond', serif;
+      font-size:.95rem; flex:1;
+    }
+ 
+    .bl-qty {
+      font-size:.7rem; letter-spacing:.1em;
+      color:var(--blush); font-weight:500;
+    }
+ 
+    .bl-remove {
+      font-size:.7rem; color:rgba(44,37,32,.25);
+      cursor:pointer; transition:color .2s; padding:.2rem;
+    }
+ 
+    .bl-remove:hover { color:var(--blush); }
+ 
+    /* Totale */
+    .bouquet-total {
+      padding-top:1rem; margin-top:.5rem;
+      border-top:1px solid rgba(184,155,106,.15);
+      display:flex; justify-content:space-between; align-items:baseline;
+    }
+ 
+    .bouquet-total span:first-child {
+      font-size:.68rem; letter-spacing:.2em; text-transform:uppercase;
+      color:rgba(44,37,32,.4);
+    }
+ 
+    .bouquet-total .total-price {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.4rem; color:var(--moss); font-style:italic;
+    }
+ 
+    /* ── NOTE PANEL ── */
+    .note-panel {
+      background:white;
+      border:1px solid rgba(184,155,106,.18);
+      padding:1.4rem 1.6rem;
+    }
+ 
+    .note-panel label {
+      font-size:.62rem; letter-spacing:.2em; text-transform:uppercase;
+      color:rgba(44,37,32,.4); display:block; margin-bottom:.5rem;
+    }
+ 
+    .note-panel textarea {
+      width:100%; height:80px; resize:none;
+      border:1px solid rgba(184,155,106,.25);
+      background:var(--cream); padding:.7rem .9rem;
+      font-family:'Jost', sans-serif; font-size:.8rem;
+      color:var(--ink); outline:none; transition:border .3s;
+      line-height:1.6;
+    }
+ 
+    .note-panel textarea:focus { border-color:var(--blush); }
+    .note-panel textarea::placeholder { color:rgba(44,37,32,.25); }
+ 
+    /* ── CTA ── */
+    .cta-btn {
+      width:100%; padding:1rem;
+      background:var(--moss); color:white;
+      border:none; cursor:pointer;
+      font-family:'Jost', sans-serif;
+      font-size:.72rem; letter-spacing:.25em; text-transform:uppercase;
+      transition:all .3s; position:relative; overflow:hidden;
+    }
+ 
+    .cta-btn::after {
+      content:'';
+      position:absolute; inset:0;
+      background:rgba(255,255,255,.08);
+      opacity:0; transition:opacity .3s;
+    }
+ 
+    .cta-btn:hover::after { opacity:1; }
+    .cta-btn:hover { background:var(--blush); }
+ 
+    .cta-btn:disabled {
+      background:rgba(44,37,32,.12); color:rgba(44,37,32,.3); cursor:not-allowed;
+    }
+ 
+    .cta-btn:disabled::after { display:none; }
+ 
+    /* ── MODAL CONFERMA ── */
+    .modal-overlay {
+      position:fixed; inset:0; z-index:500;
+      background:rgba(44,37,32,.5);
+      backdrop-filter:blur(6px);
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; pointer-events:none; transition:opacity .35s;
+    }
+ 
+    .modal-overlay.open { opacity:1; pointer-events:all; }
+ 
+    .modal {
+      background:white; max-width:460px; width:90%;
+      padding:2.5rem; position:relative;
+      transform:translateY(20px); transition:transform .35s;
+      text-align:center;
+    }
+ 
+    .modal-overlay.open .modal { transform:translateY(0); }
+ 
+    .modal-ornament {
+      font-size:2.5rem; margin-bottom:1rem; display:block;
+    }
+ 
+    .modal h2 {
+      font-family:'Cormorant Garamond', serif;
+      font-size:2rem; font-weight:400; margin-bottom:.5rem;
+    }
+ 
+    .modal p {
+      font-size:.82rem; color:rgba(44,37,32,.55); line-height:1.7;
+      margin-bottom:1.5rem;
+    }
+ 
+    .modal-summary {
+      background:var(--cream); padding:1rem 1.2rem;
+      border:1px solid rgba(184,155,106,.2);
+      margin-bottom:1.5rem; text-align:left;
+      font-size:.8rem; line-height:1.8;
+    }
+ 
+    .modal-summary strong {
+      font-family:'Cormorant Garamond', serif; font-size:1rem;
+    }
+ 
+    .modal-actions { display:flex; gap:.8rem; }
+ 
+    .btn-secondary {
+      flex:1; padding:.8rem;
+      border:1px solid rgba(44,37,32,.2); background:transparent;
+      font-family:'Jost', sans-serif; font-size:.68rem;
+      letter-spacing:.2em; text-transform:uppercase;
+      cursor:pointer; transition:all .3s; color:var(--ink);
+    }
+ 
+    .btn-secondary:hover { border-color:var(--blush); color:var(--blush); }
+ 
+    .btn-primary {
+      flex:2; padding:.8rem;
+      background:var(--moss); color:white; border:none;
+      font-family:'Jost', sans-serif; font-size:.68rem;
+      letter-spacing:.2em; text-transform:uppercase;
+      cursor:pointer; transition:background .3s;
+    }
+ 
+    .btn-primary:hover { background:var(--blush); }
+ 
+    .modal-close {
+      position:absolute; top:1rem; right:1.2rem;
+      font-size:1rem; cursor:pointer; color:rgba(44,37,32,.3);
+      transition:color .2s;
+    }
+ 
+    .modal-close:hover { color:var(--blush); }
+ 
+    /* ── Toast ── */
+    .toast {
+      position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(80px);
+      background:var(--moss); color:white; padding:.8rem 2rem;
+      font-size:.72rem; letter-spacing:.18em; text-transform:uppercase;
+      z-index:600; transition:transform .4s cubic-bezier(.22,1,.36,1);
+      pointer-events:none;
+    }
+ 
+    .toast.show { transform:translateX(-50%) translateY(0); }
+ 
+    /* Staggered section animation */
+    .section-animate {
+      animation:fadeUp .6s ease both;
+    }
+ 
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+ 
+    .section-animate:nth-child(2) { animation-delay:.1s; }
+    .section-animate:nth-child(3) { animation-delay:.2s; }
+  </style>
+</head>
+<body>
+ 
+<!-- ═══════════ NAVBAR ═══════════ -->
+<nav class="navbar">
+  <a class="navbar__logo" href="index.html">
+    <span class="logo-ornament">✿</span> Fioraio
+  </a>
+ 
+  <button class="navbar__burger" id="burger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+ 
+  <ul class="navbar__links" id="navLinks">
+    <li><a href="composizione.html" class="active">Composizioni</a></li>
+    <li><a href="piante.html">Piante</a></li>
+    <li><a href="tel:0522576309">Contattaci</a></li>
+    <li><a href="https://maps.app.goo.gl target="_blank">Trovaci su Maps</a></li>
+  </ul>
+ 
+  <div class="cart-pill" id="cartTrigger">
+    <span>🛒</span>
+    <span class="cart-count" id="cartCount">0</span>
+  </div>
+</nav>
+ 
+<!-- ═══════════ HERO ═══════════ -->
+<header class="page-hero">
+  <div class="hero-ornament">Bouquet</div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Fioraio</p>
+    <h1>Crea il tuo <em>Bouquet</em></h1>
+    <p class="hero-sub">Scegli i fiori · Personalizza · Ordina</p>
+  </div>
+</header>
+ 
+<!-- ═══════════ PROGRESS STEPS ═══════════ -->
+<div class="steps-bar" id="stepsBar">
+  <div class="step-item active" data-step="1">
+    <div class="step-circle">1</div>
+    <span class="step-label">Scegli i fiori</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step-item" data-step="2">
+    <div class="step-circle">2</div>
+    <span class="step-label">Personalizza</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step-item" data-step="3">
+    <div class="step-circle">3</div>
+    <span class="step-label">Ordina</span>
+  </div>
+</div>
+ 
+<!-- ═══════════ COMPOSER ═══════════ -->
+<div class="composer">
+ 
+  <!-- ── SINISTRA: selezione fiori ── -->
+  <div class="panel section-animate">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Catalogo fiori</h2>
+      </div>
+      <span class="panel__subtitle" id="selCount">0 selezionati</span>
+    </div>
+ 
+    <div class="flowers-toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Cerca un fiore…">
+      </div>
+      <div class="tag-filters">
+        <button class="tag-btn active" data-tag="tutti">Tutti</button>
+        <button class="tag-btn" data-tag="tutti">🌍 Sempre</button>
+        <button class="tag-btn" data-tag="primavera">🌸 Primavera</button>
+        <button class="tag-btn" data-tag="estate">☀️ Estate</button>
+        <button class="tag-btn" data-tag="autunno">🍂 Autunno</button>
+        <button class="tag-btn" data-tag="inverno">❄️ Inverno</button>
+      </div>
+    </div>
+ 
+    <div class="flowers-grid" id="flowersGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+ 
+  <!-- ── DESTRA: bouquet builder ── -->
+  <div class="bouquet-panel">
+ 
+    <!-- Preview visiva -->
+    <div class="bouquet-preview section-animate">
+      <div class="panel__header" style="padding:0 0 1rem; border-bottom:1px solid rgba(184,155,106,.1);">
+        <h2 class="panel__title" style="font-size:1.3rem;">Anteprima</h2>
+      </div>
+ 
+      <div class="bouquet-circle" id="bouquetCircle">
+        <div class="bouquet-base" id="bouquetBase">
+          <span class="bouquet-empty-label" id="bouquetEmptyLabel">Aggiungi fiori<br>al bouquet</span>
+        </div>
+      </div>
+ 
+      <div class="bouquet-name-wrap">
+        <label for="bouquetName">Nome del bouquet</label>
+        <input type="text" id="bouquetName" class="bouquet-name-input"
+               placeholder="es. Bouquet di Primavera…">
+      </div>
+ 
+      <div style="margin-top:1rem;">
+        <div style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(44,37,32,.4);margin-bottom:.5rem;">Occasione</div>
+        <div class="occasion-grid" id="occasionGrid">
+          <button class="occasion-chip" data-occ="Compleanno">🎂 Compleanno</button>
+          <button class="occasion-chip" data-occ="Anniversario">💕 Anniversario</button>
+          <button class="occasion-chip" data-occ="Matrimonio">💍 Matrimonio</button>
+          <button class="occasion-chip" data-occ="Regalo">🎁 Regalo</button>
+          <button class="occasion-chip" data-occ="Decorazione">🏡 Decorazione</button>
+          <button class="occasion-chip" data-occ="Altro">✨ Altro</button>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Lista composizione -->
+    <div class="bouquet-list-panel section-animate">
+      <div class="bouquet-list-title">
+        <span>Composizione</span>
+        <span class="bouquet-list-clear" id="clearBouquet">Svuota</span>
+      </div>
+ 
+      <div class="bouquet-list" id="bouquetList">
+        <p class="bouquet-list-empty" id="listEmpty">Nessun fiore aggiunto.</p>
+      </div>
+ 
+      <div class="bouquet-total">
+        <span>Totale stimato</span>
+        <span class="total-price" id="totalPrice">€ 0,00</span>
+      </div>
+    </div>
+ 
+    <!-- Note -->
+    <div class="note-panel section-animate">
+      <label for="noteText">Note per il fioraio</label>
+      <textarea id="noteText" placeholder="es. preferisco colori caldi, altezza degli steli media, carta kraft…"></textarea>
+    </div>
+ 
+    <!-- CTA -->
+    <button class="cta-btn" id="orderBtn" disabled>
+      Richiedi questo bouquet
+    </button>
+ 
+  </div>
+</div>
+ 
+<!-- ═══════════ MODAL ═══════════ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <span class="modal-close" id="modalClose">✕</span>
+    <span class="modal-ornament">✿</span>
+    <h2>Bouquet pronto!</h2>
+    <p>La tua composizione è stata registrata. Passa in negozio o chiamaci per confermare l'ordine.</p>
+    <div class="modal-summary" id="modalSummary"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="modalEdit">Modifica</button>
+      <a id="modalWhatsapp" href="#" target="_blank">
+        <button class="btn-primary" style="width:100%;">📱 Invia su WhatsApp</button>
+      </a>
+    </div>
+  </div>
+</div>
+ 
+<!-- ═══════════ TOAST ═══════════ -->
+<div class="toast" id="toast"></div>
+ 
+<script>
+/* ══════════════════════════════════════
+   DATI FIORI (sincronizzati con piante.html)
+══════════════════════════════════════ */
+const FLOWERS = [
+  {
+    id: 'rosa',
+    name: 'Rosa Classica',
+    price: 2.50,
+    unit: 'stelo',
+    season: 'tutti',
+    img: 'https://i.pinimg.com/736x/ab/36/15/ab361543065a38d15bb887ab3094628a.jpg',
+    color: '#c9877a'
+  },
+  {
+    id: 'orchidea',
+    name: 'Orchidea Phalaenopsis',
+    price: 18.00,
+    unit: 'pianta',
+    season: 'tutti',
+    img: 'https://i.pinimg.com/1200x/21/2d/33/212d338f8eabc92e4aa901f73f94cc93.jpg',
+    color: '#9b7db8'
+  },
+  {
+    id: 'tulipano',
+    name: 'Tulipano',
+    price: 1.80,
+    unit: 'stelo',
+    season: 'primavera',
+    img: 'https://i.pinimg.com/1200x/df/0a/80/df0a805789d7dfa7b2e01e4d4ea2a4b6.jpg',
+    color: '#e87070'
+  },
+  {
+    id: 'mimosa',
+    name: 'Mimosa',
+    price: 6.00,
+    unit: 'mazzo',
+    season: 'primavera',
+    img: 'https://i.pinimg.com/736x/d3/fa/13/d3fa134c83fd1416594c301ec21232ed.jpg',
+    color: '#e8c84a'
+  },
+  {
+    id: 'girasole',
+    name: 'Girasole',
+    price: 2.00,
+    unit: 'stelo',
+    season: 'estate',
+    img: 'https://i.pinimg.com/1200x/7e/51/78/7e517879702025ab52fbd431f15db869.jpg',
+    color: '#e8b84a'
+  },
+  {
+    id: 'lavanda',
+    name: 'Lavanda',
+    price: 4.50,
+    unit: 'fascio',
+    season: 'estate',
+    img: 'https://i.pinimg.com/1200x/f8/12/5e/f8125e0112c83d67cf31edf8b3da432c.jpg',
+    color: '#9b87d4'
+  },
+  {
+    id: 'crisantemo',
+    name: 'Crisantemo',
+    price: 3.50,
+    unit: 'pianta',
+    season: 'autunno',
+    img: 'https://i.pinimg.com/1200x/e5/21/50/e52150bf90a9e2af7c21cae723145866.jpg',
+    color: '#e89b5a'
+  },
+  {
+    id: 'dalia',
+    name: 'Dalia Autunnale',
+    price: 3.00,
+    unit: 'stelo',
+    season: 'autunno',
+    img: 'https://i.pinimg.com/1200x/28/9e/06/289e0683f4cffe6a5a4d0cdb477ba17d.jpg',
+    color: '#c87a4a'
+  },
+  {
+    id: 'stella',
+    name: 'Stella di Natale',
+    price: 8.00,
+    unit: 'pianta',
+    season: 'inverno',
+    img: 'https://i.pinimg.com/1200x/52/e1/b0/52e1b05a8b62c8fa51baef7a5af013ae.jpg',
+    color: '#c84a4a'
+  },
+  {
+    id: 'elleboro',
+    name: 'Elleboro',
+    price: 5.00,
+    unit: 'stelo',
+    season: 'inverno',
+    img: 'https://i.pinimg.com/1200x/d3/4a/e7/d34ae77f9f8aadf138da4791a8a0aed6.jpg',
+    color: '#7a8c6e'
+  },
+];
+ 
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let bouquet   = {}; // { flowerID: qty }
+let occasion  = '';
+ 
+const grid       = document.getElementById('flowersGrid');
+const bouqList   = document.getElementById('bouquetList');
+const listEmpty  = document.getElementById('listEmpty');
+const totalEl    = document.getElementById('totalPrice');
+const selCount   = document.getElementById('selCount');
+const orderBtn   = document.getElementById('orderBtn');
+const bouqBase   = document.getElementById('bouquetBase');
+const emptyLabel = document.getElementById('bouquetEmptyLabel');
+ 
+/* ── Render flower cards ── */
+function renderFlowers(filter = 'tutti', search = '') {
+  grid.innerHTML = '';
+  const q = search.toLowerCase().trim();
+ 
+  FLOWERS
+    .filter(f => {
+      const matchSeason = filter === 'tutti' || f.season === filter || f.season === 'tutti';
+      const matchSearch = !q || f.name.toLowerCase().includes(q);
+      return matchSeason && matchSearch;
+    })
+    .forEach((f, i) => {
+      const qty = bouquet[f.id] || 0;
+      const sel = qty > 0;
+ 
+      const card = document.createElement('div');
+      card.className = 'flower-card' + (sel ? ' selected' : '');
+      card.dataset.id = f.id;
+      card.style.animationDelay = (i * 0.04) + 's';
+      card.style.animation = `popIn .35s cubic-bezier(.22,1,.36,1) ${i*0.04}s both`;
+ 
+      card.innerHTML = `
+        <div class="flower-card__img">
+          <img src="${f.img}" alt="${f.name}" loading="lazy">
+        </div>
+        <div class="flower-qty-overlay">
+          <button class="qty-btn minus" data-id="${f.id}">−</button>
+          <div class="qty-badge">${qty}</div>
+          <button class="qty-btn plus" data-id="${f.id}">+</button>
+        </div>
+        <div class="flower-card__info">
+          <div class="flower-card__name">${f.name}</div>
+          <div class="flower-card__price">€${f.price.toFixed(2)} / ${f.unit}</div>
+          <div class="flower-card__season">${seasonLabel(f.season)}</div>
+        </div>
+      `;
+ 
+      // Click on card = add 1
+      card.addEventListener('click', e => {
+        if (e.target.closest('.qty-btn')) return;
+        addFlower(f.id);
+      });
+ 
+      // Plus
+      card.querySelector('.qty-btn.plus').addEventListener('click', e => {
+        e.stopPropagation();
+        addFlower(f.id);
+      });
+ 
+      // Minus
+      card.querySelector('.qty-btn.minus').addEventListener('click', e => {
+        e.stopPropagation();
+        removeFlower(f.id);
+      });
+ 
+      grid.appendChild(card);
+    });
+}
+ 
+function seasonLabel(s) {
+  const m = { tutti:'Tutto l\'anno', primavera:'Primavera', estate:'Estate', autunno:'Autunno', inverno:'Inverno' };
+  return m[s] || s;
+}
+ 
+/* ── Bouquet mutations ── */
+function addFlower(id) {
+  bouquet[id] = (bouquet[id] || 0) + 1;
+  update();
+  showToast('✿ Aggiunto al bouquet');
+}
+ 
+function removeFlower(id) {
+  if (!bouquet[id]) return;
+  bouquet[id]--;
+  if (bouquet[id] === 0) delete bouquet[id];
+  update();
+}
+ 
+/* ── Update all UI ── */
+function update() {
+  // Refresh cards in place (only badges/classes)
+  grid.querySelectorAll('.flower-card').forEach(card => {
+    const id  = card.dataset.id;
+    const qty = bouquet[id] || 0;
+    const sel = qty > 0;
+    card.classList.toggle('selected', sel);
+    card.querySelector('.qty-badge').textContent = qty;
+  });
+ 
+  // Bouquet list
+  const ids = Object.keys(bouquet);
+  selCount.textContent = ids.length + (ids.length === 1 ? ' selezionato' : ' selezionati');
+ 
+  if (ids.length === 0) {
+    bouqList.innerHTML = '';
+    bouqList.appendChild(listEmpty);
+    listEmpty.style.display = '';
+    totalEl.textContent = '€ 0,00';
+    orderBtn.disabled = true;
+    renderBouquetCircle();
+    updateSteps(1);
+    return;
+  }
+ 
+  listEmpty.style.display = 'none';
+ 
+  // Rebuild list
+  bouqList.innerHTML = '';
+  let total = 0;
+ 
+  ids.forEach(id => {
+    const f    = FLOWERS.find(x => x.id === id);
+    const qty  = bouquet[id];
+    const sub  = f.price * qty;
+    total += sub;
+ 
+    const item = document.createElement('div');
+    item.className = 'bouquet-list-item';
+    item.innerHTML = `
+      <div class="bl-thumb"><img src="${f.img}" alt="${f.name}"></div>
+      <span class="bl-name">${f.name}</span>
+      <span class="bl-qty">×${qty}</span>
+      <span class="bl-remove" data-id="${id}" title="Rimuovi">✕</span>
+    `;
+ 
+    item.querySelector('.bl-remove').addEventListener('click', () => {
+      delete bouquet[id];
+      update();
+    });
+ 
+    bouqList.appendChild(item);
+  });
+ 
+  totalEl.textContent = '€ ' + total.toFixed(2).replace('.', ',');
+  orderBtn.disabled = false;
+  renderBouquetCircle();
+  updateSteps(ids.length > 0 ? 2 : 1);
+}
+ 
+/* ── Visual circle ── */
+function renderBouquetCircle() {
+  const ids = Object.keys(bouquet);
+  bouqBase.innerHTML = '';
+ 
+  if (ids.length === 0) {
+    bouqBase.appendChild(emptyLabel);
+    return;
+  }
+ 
+  // Place flowers in a rough circle layout
+  const positions = computePositions(ids.length);
+  ids.forEach((id, i) => {
+    const f   = FLOWERS.find(x => x.id === id);
+    const qty = bouquet[id];
+    const pos = positions[i];
+    const size = Math.max(38, Math.min(60, 55 - ids.length * 2));
+ 
+    const dot = document.createElement('div');
+    dot.className = 'bouquet-flower-dot';
+    dot.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${pos.x}%;
+      top:${pos.y}%;
+      --tx:${-size/2}px;
+      --ty:${-size/2}px;
+      transform:translate(${-size/2}px, ${-size/2}px);
+      border-color:${f.color};
+    `;
+    dot.innerHTML = `<img src="${f.img}" alt="${f.name}" style="width:100%;height:100%;object-fit:cover;">`;
+ 
+    // If qty > 1, show small counter
+    if (qty > 1) {
+      const badge = document.createElement('div');
+      badge.style.cssText = `
+        position:absolute; bottom:0; right:0;
+        width:16px; height:16px; border-radius:50%;
+        background:${f.color}; color:white;
+        font-size:.55rem; font-weight:600;
+        display:flex; align-items:center; justify-content:center;
+        border:1px solid white;
+      `;
+      badge.textContent = qty;
+      dot.appendChild(badge);
+    }
+ 
+    bouqBase.appendChild(dot);
+  });
+}
+ 
+function computePositions(n) {
+  if (n === 1) return [{ x:50, y:50 }];
+ 
+  const positions = [];
+  const rings = [
+    { r:0,  count:1 },
+    { r:28, count:6 },
+    { r:42, count:10 }
+  ];
+ 
+  let placed = 0;
+  for (const ring of rings) {
+    if (placed >= n) break;
+    const toPlace = Math.min(ring.count, n - placed);
+    for (let i = 0; i < toPlace; i++) {
+      const angle = (2 * Math.PI * i / ring.count) - Math.PI / 2;
+      positions.push({
+        x: 50 + ring.r * Math.cos(angle),
+        y: 50 + ring.r * Math.sin(angle)
+      });
+      placed++;
+    }
+  }
+  return positions;
+}
+ 
+/* ── Steps indicator ── */
+function updateSteps(active) {
+  document.querySelectorAll('.step-item').forEach(el => {
+    const s = +el.dataset.step;
+    el.classList.toggle('active', s === active);
+    el.classList.toggle('done', s < active);
+  });
+}
+ 
+/* ── Tag filters ── */
+let currentTag = 'tutti';
+document.querySelectorAll('.tag-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Map the display text to actual season value
+    const rawTag = btn.dataset.tag;
+    currentTag = rawTag;
+    renderFlowers(currentTag, document.getElementById('searchInput').value);
+  });
+});
+ 
+/* ── Search ── */
+document.getElementById('searchInput').addEventListener('input', e => {
+  renderFlowers(currentTag, e.target.value);
+});
+ 
+/* ── Occasion chips ── */
+document.querySelectorAll('.occasion-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.occasion-chip').forEach(c => c.classList.remove('active'));
+    if (occasion === chip.dataset.occ) {
+      occasion = '';
+    } else {
+      chip.classList.add('active');
+      occasion = chip.dataset.occ;
+    }
+  });
+});
+ 
+/* ── Clear bouquet ── */
+document.getElementById('clearBouquet').addEventListener('click', () => {
+  bouquet = {};
+  update();
+  renderFlowers(currentTag, document.getElementById('searchInput').value);
+});
+ 
+/* ── Order modal ── */
+const modal       = document.getElementById('modal');
+const modalClose  = document.getElementById('modalClose');
+const modalEdit   = document.getElementById('modalEdit');
+const modalSummary = document.getElementById('modalSummary');
+const modalWhatsapp = document.getElementById('modalWhatsapp');
+ 
+orderBtn.addEventListener('click', () => {
+  const name = document.getElementById('bouquetName').value.trim() || 'Bouquet personalizzato';
+  const note = document.getElementById('noteText').value.trim();
+ 
+  // Build summary
+  let lines = `<strong>${name}</strong><br>`;
+  if (occasion) lines += `Occasione: ${occasion}<br>`;
+  lines += '<br>';
+ 
+  let total = 0;
+  Object.keys(bouquet).forEach(id => {
+    const f   = FLOWERS.find(x => x.id === id);
+    const qty = bouquet[id];
+    const sub = f.price * qty;
+    total += sub;
+    lines += `${f.name} × ${qty} — €${sub.toFixed(2)}<br>`;
+  });
+ 
+  lines += `<br><strong>Totale stimato: €${total.toFixed(2)}</strong>`;
+  if (note) lines += `<br><br>Note: ${note}`;
+ 
+  modalSummary.innerHTML = lines;
+ 
+  // WhatsApp link
+  const waText = buildWAText(name, note, total);
+  modalWhatsapp.href = `https://wa.me/390522576309?text=${encodeURIComponent(waText)}`;
+ 
+  modal.classList.add('open');
+  updateSteps(3);
+});
+ 
+function buildWAText(name, note, total) {
+  let txt = `Ciao! Vorrei ordinare un bouquet personalizzato da La Bottega del Fiore.\n\n`;
+  txt += `*${name}*\n`;
+  if (occasion) txt += `Occasione: ${occasion}\n`;
+  txt += '\n';
+  Object.keys(bouquet).forEach(id => {
+    const f   = FLOWERS.find(x => x.id === id);
+    const qty = bouquet[id];
+    txt += `• ${f.name} × ${qty}\n`;
+  });
+  txt += `\nTotale stimato: €${total.toFixed(2)}`;
+  if (note) txt += `\n\nNote: ${note}`;
+  return txt;
+}
+ 
+modalClose.addEventListener('click', () => modal.classList.remove('open'));
+modalEdit.addEventListener('click', () => { modal.classList.remove('open'); updateSteps(2); });
+modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+ 
+/* ── Toast ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+ 
+/* ── Burger ── */
+document.getElementById('burger').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+ 
+/* ── Cart count (sincronizzato con piante.html) ── */
+const cart = JSON.parse(localStorage.getItem('lbdf_cart') || '[]');
+document.getElementById('cartCount').textContent = cart.length;
+ 
+/* ── Init ── */
+renderFlowers();
+update();
+</script>
+</body>
+</html>
